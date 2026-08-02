@@ -1,7 +1,7 @@
 import QrCode from '@/components/QrCode'
 import { siteConfig } from '@/lib/config'
-import { useRef, useState } from 'react'
-import { handleEmailClick } from '@/lib/plugins/mailEncrypt'
+import { useState } from 'react'
+import { resolveContactEmail } from '@/lib/plugins/mailEncrypt'
 
 /**
  * 社交联系方式按钮组
@@ -18,6 +18,9 @@ const SocialButton = () => {
   const CONTACT_WEIBO = siteConfig('CONTACT_WEIBO')
   const CONTACT_INSTAGRAM = siteConfig('CONTACT_INSTAGRAM')
   const CONTACT_EMAIL = siteConfig('CONTACT_EMAIL')
+  const CONTACT_EMAIL_LINK = CONTACT_EMAIL
+    ? `mailto:${resolveContactEmail(CONTACT_EMAIL)}`
+    : ''
   const ENABLE_RSS = siteConfig('ENABLE_RSS')
   const CONTACT_BILIBILI = siteConfig('CONTACT_BILIBILI')
   const CONTACT_YOUTUBE = siteConfig('CONTACT_YOUTUBE')
@@ -34,8 +37,6 @@ const SocialButton = () => {
   const closePopover = () => {
     setQrCodeShow(false)
   }
-
-  const emailIcon = useRef(null)
 
   return (
     <div className='w-full justify-center flex-wrap flex'>
@@ -106,10 +107,9 @@ const SocialButton = () => {
         )}
         {CONTACT_EMAIL && (
           <a
-            onClick={e => handleEmailClick(e, emailIcon, CONTACT_EMAIL)}
+            href={CONTACT_EMAIL_LINK}
             title='email'
-            className='cursor-pointer'
-            ref={emailIcon}>
+            className='cursor-pointer'>
             <i className='transform hover:scale-125 duration-150 fas fa-envelope dark:hover:text-indigo-400 hover:text-indigo-600' />
           </a>
         )}
