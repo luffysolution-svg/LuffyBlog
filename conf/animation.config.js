@@ -2,6 +2,9 @@
  * 网站美化动效相关
  */
 module.exports = {
+  // 空白区域点击时的紫蓝微粒星芒
+  CLICK_SPARK: process.env.NEXT_PUBLIC_CLICK_SPARK || false,
+
   // 鼠标点击烟花特效
   FIREWORKS: process.env.NEXT_PUBLIC_FIREWORKS || false, // 开关
   // 烟花色彩，感谢 https://github.com/Vixcity 提交的色彩

@@ -41,6 +41,7 @@ const ExternalPlugin = props => {
   const ADSENSE_GOOGLE_ID = siteConfig('ADSENSE_GOOGLE_ID', null, NOTION_CONFIG)
   const FACEBOOK_APP_ID = siteConfig('FACEBOOK_APP_ID', null, NOTION_CONFIG)
   const FACEBOOK_PAGE_ID = siteConfig('FACEBOOK_PAGE_ID', null, NOTION_CONFIG)
+  const CLICK_SPARK = siteConfig('CLICK_SPARK', null, NOTION_CONFIG)
   const FIREWORKS = siteConfig('FIREWORKS', null, NOTION_CONFIG)
   const SAKURA = siteConfig('SAKURA', null, NOTION_CONFIG)
   const STARRY_SKY = siteConfig('STARRY_SKY', null, NOTION_CONFIG)
@@ -251,6 +252,7 @@ const ExternalPlugin = props => {
       {ANALYTICS_VERCEL && <Analytics />}
       {ANALYTICS_BUSUANZI_ENABLE && <Busuanzi />}
       {FACEBOOK_APP_ID && FACEBOOK_PAGE_ID && <Messenger />}
+      {CLICK_SPARK && <ClickSpark />}
       {FIREWORKS && <Fireworks />}
       {SAKURA && <Sakura />}
       {STARRY_SKY && <StarrySky />}
@@ -513,6 +515,9 @@ const ThemeSwitch = dynamic(() => import('@/components/ThemeSwitch'), {
   ssr: false
 })
 const Fireworks = dynamic(() => import('@/components/Fireworks'), {
+  ssr: false
+})
+const ClickSpark = dynamic(() => import('@/components/ClickSpark'), {
   ssr: false
 })
 const MouseFollow = dynamic(() => import('@/components/MouseFollow'), {

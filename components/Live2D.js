@@ -12,7 +12,9 @@ export default function Live2D() {
   const { theme, switchTheme } = useGlobal()
   const showPet = JSON.parse(siteConfig('WIDGET_PET'))
   const petLink = siteConfig('WIDGET_PET_LINK')
-  const petSwitchTheme = siteConfig('WIDGET_PET_SWITCH_THEME')
+  const petWidth = siteConfig('WIDGET_PET_WIDTH')
+  const petHeight = siteConfig('WIDGET_PET_HEIGHT')
+  const petSwitchTheme = JSON.parse(siteConfig('WIDGET_PET_SWITCH_THEME'))
 
   useEffect(() => {
     if (showPet && !isMobile()) {
@@ -47,9 +49,10 @@ export default function Live2D() {
   return (
     <canvas
       id='live2d'
-      width='280'
-      height='250'
+      width={petWidth}
+      height={petHeight}
       onClick={handleClick}
+      aria-label='Live2D 蕾姆'
       className='cursor-grab'
       onMouseDown={e => e.target.classList.add('cursor-grabbing')}
       onMouseUp={e => e.target.classList.remove('cursor-grabbing')}

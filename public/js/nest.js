@@ -1,117 +1,136 @@
 /* eslint-disable */
 
-/**
- * 创建连接点
- * @param config
- */
+const nestHostId = '__nest'
+const nestCanvasId = '__nest-canvas'
+let nestCleanup = null
 
-const idNest = '__nest'
+function readConfig(element, name) {
+  return element.dataset[name] ?? element.getAttribute(name)
+}
+
+function readNumber(element, name, fallback) {
+  const value = Number(readConfig(element, name))
+  return Number.isFinite(value) ? value : fallback
+}
+
+/**
+ * 创建低干扰的动态粒子背景。
+ * 配置由 #__nest 的 data-* 或旧版普通属性提供，画布不拦截任何鼠标事件。
+ */
 function createNest() {
-  const e = document.getElementById(idNest)
-  if(!e) return
-  function n(e, n, t) {
-    return e.getAttribute(n) || t
+  destroyNest()
+
+  const host = document.getElementById(nestHostId)
+  if (!host) return
+
+  const canvas = document.createElement('canvas')
+  canvas.id = nestCanvasId
+  canvas.setAttribute('aria-hidden', 'true')
+  canvas.style.cssText = [
+    'position:fixed',
+    'inset:0',
+    'pointer-events:none',
+    `z-index:${readNumber(host, 'zIndex', 5)}`,
+    `opacity:${readNumber(host, 'opacity', 0.28)}`
+  ].join(';')
+  host.appendChild(canvas)
+
+  const context = canvas.getContext('2d')
+  if (!context) {
+    canvas.remove()
+    return
   }
-  function t() {
-    ;(u = i.width =
-      window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth),
-      (d = i.height =
-        window.innerHeight ||
-        document.documentElement.clientHeight ||
-        document.body.clientHeight)
+
+  const color = readConfig(host, 'color') || '146,140,238'
+  const count = Math.max(12, Math.min(120, readNumber(host, 'count', 48)))
+  const cursor = { x: null, y: null, max: 18000 }
+  let width = 0
+  let height = 0
+  let frameId = null
+
+  const resize = () => {
+    const ratio = Math.min(window.devicePixelRatio || 1, 2)
+    width = window.innerWidth || document.documentElement.clientWidth
+    height = window.innerHeight || document.documentElement.clientHeight
+    canvas.width = Math.round(width * ratio)
+    canvas.height = Math.round(height * ratio)
+    canvas.style.width = `${width}px`
+    canvas.style.height = `${height}px`
+    context.setTransform(ratio, 0, 0, ratio, 0, 0)
   }
-  function o() {
-    c.clearRect(0, 0, u, d)
-    const e = [s].concat(x)
-    let n, t, i, l, r, w
-    x.forEach(function (o) {
-      for (
-        o.x += o.xa,
-          o.y += o.ya,
-          o.xa *= o.x > u || o.x < 0 ? -1 : 1,
-          o.ya *= o.y > d || o.y < 0 ? -1 : 1,
-          c.fillRect(o.x - 0.5, o.y - 0.5, 1, 1),
-          t = 0;
-        t < e.length;
-        t++
-      )
-        (n = e[t]),
-          o !== n &&
-            null !== n.x &&
-            null !== n.y &&
-            ((l = o.x - n.x),
-            (r = o.y - n.y),
-            (w = l * l + r * r),
-            w < n.max &&
-              (n === s &&
-                w >= n.max / 2 &&
-                ((o.x -= 0.03 * l), (o.y -= 0.03 * r)),
-              (i = (n.max - w) / n.max),
-              c.beginPath(),
-              (c.lineWidth = i / 2),
-              (c.strokeStyle = 'rgba(' + a.c + ',' + (i + 0.2) + ')'),
-              c.moveTo(o.x, o.y),
-              c.lineTo(n.x, n.y),
-              c.stroke()))
-      e.splice(e.indexOf(o), 1)
-    }),
-      m(o)
+
+  const particles = Array.from({ length: count }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: Math.random() * 0.6 - 0.3,
+    vy: Math.random() * 0.6 - 0.3,
+    max: 5200
+  }))
+
+  const moveCursor = event => {
+    cursor.x = event.clientX
+    cursor.y = event.clientY
   }
-  var i = document.createElement('canvas')
-  i.id = id
-  var a = (function () {
-      const t = e
-      return {
-        z: n(t, 'zIndex', 0),
-        o: n(t, 'opacity', 0.7),
-        c: n(t, 'color', '0,0,0'),
-        n: n(t, 'count', 99)
+  const clearCursor = () => {
+    cursor.x = null
+    cursor.y = null
+  }
+
+  const draw = () => {
+    context.clearRect(0, 0, width, height)
+    const points = [cursor, ...particles]
+
+    particles.forEach((particle, particleIndex) => {
+      particle.x += particle.vx
+      particle.y += particle.vy
+      if (particle.x > width || particle.x < 0) particle.vx *= -1
+      if (particle.y > height || particle.y < 0) particle.vy *= -1
+
+      context.fillStyle = `rgba(${color},0.7)`
+      context.fillRect(particle.x - 0.5, particle.y - 0.5, 1, 1)
+
+      for (let index = particleIndex + 1; index < points.length; index++) {
+        const point = points[index]
+        if (point.x === null || point.y === null) continue
+
+        const deltaX = particle.x - point.x
+        const deltaY = particle.y - point.y
+        const distance = deltaX * deltaX + deltaY * deltaY
+        const maxDistance = point.max || particle.max
+        if (distance >= maxDistance) continue
+
+        const strength = (maxDistance - distance) / maxDistance
+        context.beginPath()
+        context.lineWidth = strength * 0.55
+        context.strokeStyle = `rgba(${color},${strength * 0.55})`
+        context.moveTo(particle.x, particle.y)
+        context.lineTo(point.x, point.y)
+        context.stroke()
       }
-    })(),
-    c = i.getContext('2d')
-  let u, d
-  var m =
-    window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame ||
-    window.oRequestAnimationFrame ||
-    window.msRequestAnimationFrame ||
-    function (e) {
-      window.setTimeout(e, 1e3 / 45)
-    }
-  const l = Math.random
-  var r,
-    s = { x: null, y: null, max: 2e4 }
-  ;(i.style.cssText =
-    'position:fixed;top:0;left:0;pointer-events:none;z-index:' + a.z + ';opacity:' + a.o),
-    (r = 'body'), e.appendChild(i),
-    t(),
-    (window.onresize = t),
-    (window.onmousemove = function (e) {
-      ;(e = e || window.event), (s.x = e.clientX), (s.y = e.clientY)
-    }),
-    (window.onmouseout = function () {
-      ;(s.x = null), (s.y = null)
     })
-  for (var x = [], w = 0; a.n > w; w++) {
-    const e = l() * u,
-      n = l() * d,
-      t = 2 * l() - 1,
-      o = 2 * l() - 1
-    x.push({ x: e, y: n, xa: t, ya: o, max: 6e3 })
+
+    frameId = window.requestAnimationFrame(draw)
   }
-  setTimeout(function () {
-    o()
-  }, 100)
+
+  resize()
+  window.addEventListener('resize', resize, { passive: true })
+  window.addEventListener('mousemove', moveCursor, { passive: true })
+  document.addEventListener('mouseleave', clearCursor)
+  frameId = window.requestAnimationFrame(draw)
+
+  nestCleanup = () => {
+    if (frameId) window.cancelAnimationFrame(frameId)
+    window.removeEventListener('resize', resize)
+    window.removeEventListener('mousemove', moveCursor)
+    document.removeEventListener('mouseleave', clearCursor)
+    canvas.remove()
+    nestCleanup = null
+  }
 }
 
 function destroyNest() {
-  const nest = document.getElementById(idNest)
-  if (nest && nest.parentNode && nest.parentNode.contains(nest)) {
-    nest.parentNode.removeChild(nest)
-  }
+  nestCleanup?.()
+  document.getElementById(nestCanvasId)?.remove()
 }
 
 window.createNest = createNest

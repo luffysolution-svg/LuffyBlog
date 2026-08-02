@@ -2,6 +2,7 @@ import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
 import throttle from 'lodash.throttle'
 import SmartLink from '@/components/SmartLink'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import CONFIG from '../config'
@@ -164,6 +165,7 @@ const Header = props => {
               {' '}
               <MenuListTop {...props} />
             </div>
+            <LanguageSwitcher />
             <div
               onClick={toggleMenuOpen}
               className='w-8 justify-center items-center h-8 cursor-pointer flex lg:hidden'>

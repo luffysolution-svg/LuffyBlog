@@ -132,8 +132,23 @@ yarn dev
 2. 数据库需要公开分享；若保持私有，只能在服务端配置 `NOTION_ACTIVE_USER` 和 `NOTION_TOKEN_V2`，不得使用 `NEXT_PUBLIC_` 前缀。
 3. 默认字段为 `title`、`type`、`status`、`category`、`tags`、`date`、`summary`、`slug`、`password`、`icon` 和 `ext`。字段名不同可用 `NEXT_PUBLIC_NOTION_PROPERTY_*` 映射，字段值仍在 Notion 中维护。
 4. 只有 `type=Post` 且 `status=Published` 的页面会进入公开文章集合；草稿不会进入搜索、RSS 或相关文章。
+5. `NEXT_PUBLIC_SITE_LOCALES=en` 会启用中英文界面和导航栏语言切换器，并继续复用原 `NOTION_PAGE_ID`；准备好独立英文数据库后，只需新增服务端变量 `NOTION_PAGE_ID_EN`，代码会在不覆盖中文数据源的前提下自动映射 `/en`。
 
 当前候选数据库“科研教程”公开页面 ID 为 `3aef0aadca96802fa7e5eadb4b837b24`，但目前只包含 `title` 和 `tags`。在补齐发布字段并为文章设置状态前，站点会保留真实数据源但不会把这些页面误判为已发布文章。
+
+### 站点体验功能
+
+LuffyBlog 的分享、音乐、Live2D 和动效都沿用 NotionNext 原生插件入口，推荐的生产配置如下：
+
+| 功能 | 环境变量 |
+| --- | --- |
+| 文章分享 | `NEXT_PUBLIC_POST_SHARE_BAR=true`，服务列表见 `.env.example` |
+| 音乐播放器 | `NEXT_PUBLIC_MUSIC_PLAYER=true`、`NEXT_PUBLIC_MUSIC_PLAYER_AUTO_PLAY=false` |
+| Live2D 蕾姆 | `NEXT_PUBLIC_WIDGET_PET=true`、`NEXT_PUBLIC_WIDGET_PET_LINK=https://imuncle.github.io/live2d/model/rem/model.json` |
+| 动态粒子背景 | `NEXT_PUBLIC_NEST=true` |
+| 点击微粒星芒 | `NEXT_PUBLIC_CLICK_SPARK=true` |
+
+音乐播放器默认使用 `conf/widget.config.js` 中的示例曲目，保持可见且不自动播放；如需替换歌单，可使用 Meting 配置或修改 `MUSIC_PLAYER_AUDIO_LIST`。背景与点击动效不会拦截页面操作，并会尊重系统“减少动态效果”偏好；点击星芒在触摸设备上自动停用。
 
 ### Giscus
 

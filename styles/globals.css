@@ -288,7 +288,6 @@ img {
   overflow: hidden;
 }
 
-
 .lazy-image-placeholder{
   background: 
       linear-gradient(90deg,#0001 33%,#0005 50%,#0001 66%)
@@ -298,4 +297,93 @@ img {
   }
   @keyframes l1 {
   0% {background-position: right}
+}
+
+/* LuffyBlog：空白区域点击时的紫蓝微粒星芒 */
+.click-spark-burst {
+  position: fixed;
+  z-index: 9999;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  animation: click-spark-lifetime 620ms linear forwards;
+}
+
+.click-spark-ring,
+.click-spark-particle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.click-spark-ring {
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  border: 1.5px solid rgba(146, 140, 238, 0.8);
+  border-radius: 9999px;
+  animation: click-spark-ring 520ms ease-out forwards;
+}
+
+.click-spark-particle {
+  color: var(--spark-color);
+  animation: click-spark-particle 600ms cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+}
+
+.click-spark-star {
+  margin: -7px 0 0 -5px;
+  font-size: 12px;
+  line-height: 1;
+  text-shadow: 0 0 6px var(--spark-color);
+}
+
+.click-spark-dot {
+  width: 4px;
+  height: 4px;
+  margin: -2px;
+  background: var(--spark-color);
+  border-radius: 9999px;
+  box-shadow: 0 0 6px var(--spark-color);
+}
+
+@keyframes click-spark-particle {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.25) rotate(0deg);
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--spark-x), var(--spark-y)) scale(0.1)
+      rotate(120deg);
+  }
+}
+
+@keyframes click-spark-ring {
+  from {
+    opacity: 0.9;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+}
+
+@keyframes click-spark-lifetime {
+  from {
+    visibility: visible;
+  }
+  to {
+    visibility: hidden;
+  }
+}
+
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+  .click-spark-burst {
+    display: none;
+  }
 }

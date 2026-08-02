@@ -1,14 +1,15 @@
 import { siteConfig } from '@/lib/config'
 import { loadExternalResource } from '@/lib/utils'
-import { useEffect, useRef, useState } from 'react'
+import Head from 'next/head'
+import { useEffect, useRef } from 'react'
 
 /**
  * 音乐播放器
  * @returns
  */
 const Player = () => {
-  const [player, setPlayer] = useState()
   const ref = useRef(null)
+  const playerRef = useRef(null)
   const lrcType = JSON.parse(siteConfig('MUSIC_PLAYER_LRC_TYPE'))
   const playerVisible = JSON.parse(siteConfig('MUSIC_PLAYER_VISIBLE'))
   const autoPlay = JSON.parse(siteConfig('MUSIC_PLAYER_AUTO_PLAY'))
@@ -18,13 +19,12 @@ const Player = () => {
 
   const musicPlayerEnable = siteConfig('MUSIC_PLAYER')
   const musicPlayerCDN = siteConfig('MUSIC_PLAYER_CDN_URL')
-  const musicMetingEnable = siteConfig('MUSIC_PLAYER_METING')
   const musicMetingCDNUrl = siteConfig(
     'MUSIC_PLAYER_METING_CDN_URL',
     'https://cdnjs.cloudflare.com/ajax/libs/meting/2.0.1/Meting.min.js'
   )
 
-  const initMusicPlayer = async () => {
+  const initMusicPlayer = async isDisposed => {
     if (!musicPlayerEnable) {
       return
     }
@@ -34,38 +34,41 @@ const Player = () => {
       console.error('音乐组件异常', error)
     }
 
-    if (musicMetingEnable) {
+    if (meting) {
       await loadExternalResource(musicMetingCDNUrl, 'js')
     }
 
-    if (!meting && window.APlayer) {
-      setPlayer(
-        new window.APlayer({
-          container: ref.current,
-          fixed: true,
-          lrcType: lrcType,
-          autoplay: autoPlay,
-          order: order,
-          audio: audio
-        })
-      )
+    if (!isDisposed() && !meting && window.APlayer && ref.current) {
+      playerRef.current = new window.APlayer({
+        container: ref.current,
+        fixed: true,
+        lrcType: lrcType,
+        autoplay: autoPlay,
+        order: order,
+        audio: audio
+      })
     }
   }
 
   useEffect(() => {
-    initMusicPlayer()
+    let disposed = false
+    initMusicPlayer(() => disposed)
     return () => {
-      setPlayer(undefined)
+      disposed = true
+      playerRef.current?.destroy?.()
+      playerRef.current = null
     }
   }, [])
 
   return (
     <div className={playerVisible ? 'visible' : 'invisible'}>
-      <link
-        rel='stylesheet'
-        type='text/css'
-        href='https://cdn.jsdelivr.net/npm/aplayer@1.10.0/dist/APlayer.min.css'
-      />
+      <Head>
+        <link
+          rel='stylesheet'
+          type='text/css'
+          href='https://cdn.jsdelivr.net/npm/aplayer@1.10.0/dist/APlayer.min.css'
+        />
+      </Head>
       {meting ? (
         <meting-js
           fixed='true'
@@ -81,7 +84,7 @@ const Player = () => {
           id={siteConfig('MUSIC_PLAYER_METING_ID')}
         />
       ) : (
-        <div ref={ref} data-player={player} />
+        <div ref={ref} />
       )}
     </div>
   )
