@@ -20,5 +20,11 @@ module.exports = {
   CONTACT_YOUTUBE: process.env.NEXT_PUBLIC_CONTACT_YOUTUBE || '', // Youtube主页
   CONTACT_XIAOHONGSHU: process.env.NEXT_PUBLIC_CONTACT_XIAOHONGSHU || '', // 小红书主页
   CONTACT_ZHISHIXINGQIU: process.env.NEXT_PUBLIC_CONTACT_ZHISHIXINGQIU || '', // 知识星球
-  CONTACT_WEHCHAT_PUBLIC: process.env.NEXT_PUBLIC_CONTACT_WEHCHAT_PUBLIC || '' // 微信公众号 格式：https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=【xxxxxx】==#wechat_redirect
+  CONTACT_WEHCHAT_PUBLIC: process.env.NEXT_PUBLIC_CONTACT_WEHCHAT_PUBLIC || '', // 微信公众号主页链接，不能填写二维码图片 URL
+  CONTACT_WECHAT_QR_IMAGE:
+    process.env.NEXT_PUBLIC_CONTACT_WECHAT_QR_IMAGE || '', // 个人微信二维码图片
+  CONTACT_WECHAT_PUBLIC_QR_IMAGE:
+    process.env.NEXT_PUBLIC_CONTACT_WECHAT_PUBLIC_QR_IMAGE || '', // 微信公众号二维码图片
+  CONTACT_WECHAT_PUBLIC_NAME:
+    process.env.NEXT_PUBLIC_CONTACT_WECHAT_PUBLIC_NAME || '' // 微信公众号名称
 }

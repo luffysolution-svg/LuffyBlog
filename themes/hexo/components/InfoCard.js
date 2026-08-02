@@ -3,6 +3,7 @@ import Card from './Card'
 import SocialButton from './SocialButton'
 import MenuGroupCard from './MenuGroupCard'
 import LazyImage from '@/components/LazyImage'
+import ContactQrCards from '@/components/ContactQrCards'
 import { siteConfig } from '@/lib/config'
 
 /**
@@ -22,12 +23,13 @@ export function InfoCard(props) {
                 }}
             >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <LazyImage src={siteInfo?.icon} className='rounded-full' width={120} height={120} alt={siteConfig('AUTHOR')} />
+                <LazyImage src={siteInfo?.icon} fallbackSrc='/avatar.svg' className='rounded-full' width={120} height={120} alt={`${siteConfig('AUTHOR')}的头像`} />
             </div>
             <div className='font-medium text-center text-xl pb-4'>{siteConfig('AUTHOR')}</div>
             <div className='text-sm text-center'>{siteConfig('BIO')}</div>
             <MenuGroupCard {...props} />
             <SocialButton />
+            <ContactQrCards />
         </Card>
   )
 }
