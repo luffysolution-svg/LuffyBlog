@@ -31,7 +31,7 @@ function createNest() {
     'inset:0',
     'pointer-events:none',
     `z-index:${readNumber(host, 'zIndex', 5)}`,
-    `opacity:${readNumber(host, 'opacity', 0.28)}`
+    `opacity:${readNumber(host, 'opacity', 0.45)}`
   ].join(';')
   host.appendChild(canvas)
 
@@ -41,9 +41,9 @@ function createNest() {
     return
   }
 
-  const color = readConfig(host, 'color') || '146,140,238'
-  const count = Math.max(12, Math.min(120, readNumber(host, 'count', 48)))
-  const cursor = { x: null, y: null, max: 18000 }
+  const color = readConfig(host, 'color') || '124,112,255'
+  const count = Math.max(12, Math.min(120, readNumber(host, 'count', 64)))
+  const cursor = { x: null, y: null, max: 30000 }
   let width = 0
   let height = 0
   let frameId = null
@@ -64,7 +64,7 @@ function createNest() {
     y: Math.random() * window.innerHeight,
     vx: Math.random() * 0.6 - 0.3,
     vy: Math.random() * 0.6 - 0.3,
-    max: 5200
+    max: 8500
   }))
 
   const moveCursor = event => {
@@ -86,8 +86,8 @@ function createNest() {
       if (particle.x > width || particle.x < 0) particle.vx *= -1
       if (particle.y > height || particle.y < 0) particle.vy *= -1
 
-      context.fillStyle = `rgba(${color},0.7)`
-      context.fillRect(particle.x - 0.5, particle.y - 0.5, 1, 1)
+      context.fillStyle = `rgba(${color},0.95)`
+      context.fillRect(particle.x - 1, particle.y - 1, 2, 2)
 
       for (let index = particleIndex + 1; index < points.length; index++) {
         const point = points[index]
@@ -101,8 +101,8 @@ function createNest() {
 
         const strength = (maxDistance - distance) / maxDistance
         context.beginPath()
-        context.lineWidth = strength * 0.55
-        context.strokeStyle = `rgba(${color},${strength * 0.55})`
+        context.lineWidth = strength * 0.75
+        context.strokeStyle = `rgba(${color},${strength * 0.75})`
         context.moveTo(particle.x, particle.y)
         context.lineTo(point.x, point.y)
         context.stroke()

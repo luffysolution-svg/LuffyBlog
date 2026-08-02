@@ -8,7 +8,7 @@ describe('ClickSpark', () => {
     fireEvent.click(document.body, { clientX: 120, clientY: 80 })
 
     expect(document.querySelector('.click-spark-burst')).not.toBeNull()
-    expect(document.querySelectorAll('.click-spark-particle')).toHaveLength(10)
+    expect(document.querySelectorAll('.click-spark-particle')).toHaveLength(12)
   })
 
   it('does not trigger when clicking an interactive control', () => {

@@ -13,7 +13,7 @@ const INTERACTIVE_SELECTOR = [
   '#live2d'
 ].join(',')
 
-const PARTICLE_COLORS = ['#928cee', '#7c9aff', '#c4b5fd', '#f5f3ff']
+const PARTICLE_COLORS = ['#7c6cff', '#5aa7ff', '#c084fc', '#ffffff']
 
 /**
  * 空白区域点击时显示一组短暂的紫蓝微粒星芒。
@@ -44,9 +44,9 @@ export default function ClickSpark() {
       ring.className = 'click-spark-ring'
       burst.appendChild(ring)
 
-      for (let index = 0; index < 10; index++) {
-        const angle = (Math.PI * 2 * index) / 10
-        const distance = 22 + (index % 3) * 6
+      for (let index = 0; index < 12; index++) {
+        const angle = (Math.PI * 2 * index) / 12
+        const distance = 34 + (index % 3) * 10
         const particle = document.createElement('span')
         particle.className = `click-spark-particle ${
           index % 2 === 0 ? 'click-spark-star' : 'click-spark-dot'
@@ -72,7 +72,7 @@ export default function ClickSpark() {
       document.body.appendChild(burst)
       const cleanup = () => burst.remove()
       burst.addEventListener('animationend', cleanup, { once: true })
-      window.setTimeout(cleanup, 800)
+      window.setTimeout(cleanup, 1000)
     }
 
     document.addEventListener('click', handleClick)

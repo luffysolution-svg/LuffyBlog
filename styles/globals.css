@@ -306,7 +306,7 @@ img {
   width: 0;
   height: 0;
   pointer-events: none;
-  animation: click-spark-lifetime 620ms linear forwards;
+  animation: click-spark-lifetime 800ms linear forwards;
 }
 
 .click-spark-ring,
@@ -318,33 +318,34 @@ img {
 }
 
 .click-spark-ring {
-  width: 10px;
-  height: 10px;
-  margin: -5px;
-  border: 1.5px solid rgba(146, 140, 238, 0.8);
+  width: 14px;
+  height: 14px;
+  margin: -7px;
+  border: 2px solid rgba(124, 108, 255, 0.95);
   border-radius: 9999px;
-  animation: click-spark-ring 520ms ease-out forwards;
+  box-shadow: 0 0 10px rgba(90, 167, 255, 0.75);
+  animation: click-spark-ring 700ms ease-out forwards;
 }
 
 .click-spark-particle {
   color: var(--spark-color);
-  animation: click-spark-particle 600ms cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+  animation: click-spark-particle 760ms cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
 }
 
 .click-spark-star {
-  margin: -7px 0 0 -5px;
-  font-size: 12px;
+  margin: -10px 0 0 -7px;
+  font-size: 18px;
   line-height: 1;
-  text-shadow: 0 0 6px var(--spark-color);
+  text-shadow: 0 0 12px var(--spark-color), 0 0 20px var(--spark-color);
 }
 
 .click-spark-dot {
-  width: 4px;
-  height: 4px;
-  margin: -2px;
+  width: 6px;
+  height: 6px;
+  margin: -3px;
   background: var(--spark-color);
   border-radius: 9999px;
-  box-shadow: 0 0 6px var(--spark-color);
+  box-shadow: 0 0 10px var(--spark-color), 0 0 16px var(--spark-color);
 }
 
 @keyframes click-spark-particle {
@@ -357,8 +358,8 @@ img {
   }
   100% {
     opacity: 0;
-    transform: translate(var(--spark-x), var(--spark-y)) scale(0.1)
-      rotate(120deg);
+    transform: translate(var(--spark-x), var(--spark-y)) scale(0.2)
+      rotate(150deg);
   }
 }
 
@@ -369,7 +370,7 @@ img {
   }
   to {
     opacity: 0;
-    transform: scale(3.2);
+    transform: scale(4.2);
   }
 }
 

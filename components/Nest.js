@@ -27,9 +27,9 @@ const Nest = () => {
   return (
     <div
       id='__nest'
-      data-color='146,140,238'
-      data-count='48'
-      data-opacity='0.3'
+      data-color='124,112,255'
+      data-count='64'
+      data-opacity='0.45'
       data-z-index='5'
       aria-hidden='true'
     />
