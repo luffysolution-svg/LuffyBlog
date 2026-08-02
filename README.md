@@ -122,6 +122,30 @@ yarn dev
 | `yarn docs:site:dev` | 本地预览文档站 |
 | `yarn docs:site:build` | 构建文档站 |
 
+## LuffyBlog 配置与部署
+
+本 Fork 使用 `hexo` 主题，站点资料、联系方式、Giscus 和统计功能均通过环境变量配置。可复制 [.env.example](./.env.example) 顶部的 LuffyBlog 示例到本地 `.env.local` 或 Vercel；`.env.local` 已被 Git 忽略，不要提交任何 Token。
+
+### Notion
+
+1. `NOTION_PAGE_ID` 必须指向一个 Notion 数据库页面，而不是普通文章页或 `collection://` 数据源 ID。
+2. 数据库需要公开分享；若保持私有，只能在服务端配置 `NOTION_ACTIVE_USER` 和 `NOTION_TOKEN_V2`，不得使用 `NEXT_PUBLIC_` 前缀。
+3. 默认字段为 `title`、`type`、`status`、`category`、`tags`、`date`、`summary`、`slug`、`password`、`icon` 和 `ext`。字段名不同可用 `NEXT_PUBLIC_NOTION_PROPERTY_*` 映射，字段值仍在 Notion 中维护。
+4. 只有 `type=Post` 且 `status=Published` 的页面会进入公开文章集合；草稿不会进入搜索、RSS 或相关文章。
+
+当前候选数据库“科研教程”公开页面 ID 为 `3aef0aadca96802fa7e5eadb4b837b24`，但目前只包含 `title` 和 `tags`。在补齐发布字段并为文章设置状态前，站点会保留真实数据源但不会把这些页面误判为已发布文章。
+
+### Giscus
+
+仓库需要开启 GitHub Discussions，并安装 [giscus GitHub App](https://github.com/apps/giscus)。配置 `NEXT_PUBLIC_COMMENT_GISCUS_REPO`、真实的 repo/category ID、`pathname` 映射、`zh-CN` 语言和 `bottom` 输入框位置；不要猜测 ID。评论组件进入视口后才会加载。
+
+### Vercel 与域名
+
+1. 在 Vercel 导入 `luffysolution-svg/LuffyBlog`，Framework Preset 选择 Next.js，Node.js 使用 22，安装与构建命令保持 `yarn install --frozen-lockfile` 和 `yarn build`，无需设置输出目录。
+2. 在 Development、Preview、Production 中配置所需公共变量；敏感的 Notion Token 或 `REVALIDATION_TOKEN` 只放在 Vercel 服务端变量中。
+3. 首次生产部署完成后，将 Vercel 生产 URL 写入 `NEXT_PUBLIC_LINK` 并重新部署。
+4. 后续绑定独立域名时，在 Vercel Project → Settings → Domains 添加域名，更新 `NEXT_PUBLIC_LINK`，再重新部署；其他代码无需修改。
+
 ## 文档入口
 
 自 2026 年起，NotionNext 使用仓库内 Markdown 文档作为主要教程来源，并发布为独立文档站。
