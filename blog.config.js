@@ -2,8 +2,7 @@
 
 const { appendLocalePageId } = require('./lib/utils/pageId')
 
-const DEFAULT_NOTION_PAGE_ID =
-  '02ab3b8678004aa69e9e415905ef32a5,en:7c1d570661754c8fbc568e00a01fd70e'
+const DEFAULT_NOTION_PAGE_ID = 'c3cf0aadca96825ea79b015229a6d92d'
 const NOTION_PAGE_ID = appendLocalePageId(
   process.env.NOTION_PAGE_ID || DEFAULT_NOTION_PAGE_ID,
   'en',
