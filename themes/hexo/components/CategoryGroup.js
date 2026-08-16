@@ -6,7 +6,7 @@ const CategoryGroup = ({ currentCategory, categories }) => {
   if (!categories) {
     return <></>
   }
-  const categoryCount = Number(siteConfig('HEXO_PREVIEW_CATEGORY_COUNT', null, CONFIG)) || 0
+  const categoryCount = Number(siteConfig('PREVIEW_CATEGORY_COUNT', null, CONFIG)) || 0
   const visibleCategories = categoryCount > 0 ? categories.slice(0, categoryCount) : categories
   return <>
     <div id='category-list' className='dark:border-gray-600 flex flex-wrap  mx-4'>

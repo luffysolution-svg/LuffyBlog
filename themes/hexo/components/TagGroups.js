@@ -11,7 +11,7 @@ import CONFIG from '../config'
  */
 const TagGroups = ({ tags, currentTag }) => {
   if (!tags) return <></>
-  const tagCount = Number(siteConfig('HEXO_PREVIEW_TAG_COUNT', null, CONFIG)) || 0
+  const tagCount = Number(siteConfig('PREVIEW_TAG_COUNT', null, CONFIG)) || 0
   const visibleTags = tagCount > 0 ? tags.slice(0, tagCount) : tags
   return (
     <div id='tags-group' className='dark:border-gray-600 space-y-2'>

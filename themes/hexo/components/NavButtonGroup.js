@@ -9,7 +9,7 @@ import CONFIG from '../config'
  */
 const NavButtonGroup = (props) => {
   const { categoryOptions } = props
-  const categoryCount = Number(siteConfig('HEXO_PREVIEW_CATEGORY_COUNT', null, CONFIG)) || 0
+  const categoryCount = Number(siteConfig('PREVIEW_CATEGORY_COUNT', null, CONFIG)) || 0
   const visibleCategories = categoryCount > 0 ? categoryOptions?.slice(0, categoryCount) : categoryOptions
   if (!visibleCategories || visibleCategories.length === 0) {
     return <></>
