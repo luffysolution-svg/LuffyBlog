@@ -1,4 +1,6 @@
 import SmartLink from '@/components/SmartLink'
+import { siteConfig } from '@/lib/config'
+import CONFIG from '../config'
 
 /**
  * 首页导航大按钮组件
@@ -7,13 +9,15 @@ import SmartLink from '@/components/SmartLink'
  */
 const NavButtonGroup = (props) => {
   const { categoryOptions } = props
-  if (!categoryOptions || categoryOptions.length === 0) {
+  const categoryCount = Number(siteConfig('HEXO_PREVIEW_CATEGORY_COUNT', null, CONFIG)) || 0
+  const visibleCategories = categoryCount > 0 ? categoryOptions?.slice(0, categoryCount) : categoryOptions
+  if (!visibleCategories || visibleCategories.length === 0) {
     return <></>
   }
 
   return (
     <nav id='home-nav-button' className={'w-full z-10 md:h-72 md:mt-6 xl:mt-32 px-5 py-2 mt-8 flex flex-wrap md:max-w-6xl space-y-2 md:space-y-0 md:flex justify-center max-h-80 overflow-auto'}>
-      {categoryOptions?.map(category => {
+      {visibleCategories.map(category => {
         return (
           <SmartLink
             key={`${category.name}`}
