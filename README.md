@@ -143,12 +143,12 @@ LuffyBlog 的分享、音乐、Live2D 和动效都沿用 NotionNext 原生插件
 | 功能 | 环境变量 |
 | --- | --- |
 | 文章分享 | `NEXT_PUBLIC_POST_SHARE_BAR=true`，服务列表见 `.env.example` |
-| 音乐播放器 | `NEXT_PUBLIC_MUSIC_PLAYER=true`、`NEXT_PUBLIC_MUSIC_PLAYER_AUTO_PLAY=false` |
+| 音乐播放器 | `NEXT_PUBLIC_MUSIC_PLAYER=true`、`NEXT_PUBLIC_MUSIC_PLAYER_AUTO_PLAY=false`、`CHKSZ_API_KEY=xxx`（服务端密钥） |
 | Live2D 蕾姆 | `NEXT_PUBLIC_WIDGET_PET=true`、`NEXT_PUBLIC_WIDGET_PET_LINK=https://imuncle.github.io/live2d/model/rem/model.json` |
 | 动态粒子背景 | `NEXT_PUBLIC_NEST=true` |
 | 点击微粒星芒 | `NEXT_PUBLIC_CLICK_SPARK=true` |
 
-音乐播放器默认使用 `conf/widget.config.js` 中的示例曲目，保持可见且不自动播放；如需替换歌单，可使用 Meting 配置或修改 `MUSIC_PLAYER_AUDIO_LIST`。背景与点击动效不会拦截页面操作，并会尊重系统“减少动态效果”偏好；点击星芒在触摸设备上自动停用。
+音乐播放器支持「点歌搜索 + 播放队列 + 歌词」：曲目默认来自 `conf/widget.config.js` 的 `MUSIC_PLAYER_AUDIO_LIST`（带网易云歌曲 `id` 的曲目会在播放时自动解析），也可在播放器面板里搜索歌曲加入队列。搜索/解析/歌词走超音速(CHKSZ)音乐服务，需要服务端环境变量 `CHKSZ_API_KEY`（密钥仅服务端使用，切勿加 `NEXT_PUBLIC_` 前缀）。背景与点击动效不会拦截页面操作，并会尊重系统“减少动态效果”偏好；点击星芒在触摸设备上自动停用。
 
 ### Giscus
 

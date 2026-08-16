@@ -28,20 +28,21 @@ module.exports = {
     'https://cdn.jsdelivr.net/npm/aplayer@1.10.0/dist/APlayer.min.js',
   MUSIC_PLAYER_ORDER: process.env.NEXT_PUBLIC_MUSIC_PLAYER_ORDER || 'list', // 默认播放方式，顺序 list，随机 random
   MUSIC_PLAYER_AUDIO_LIST: [
-    // 示例音乐列表。除了以下配置外，还可配置歌词，具体配置项看此文档 https://aplayer.js.org/#/zh-Hans/
+    // 示例播放列表。带 id（网易云歌曲 ID）的曲目会在播放时通过超音速(CHKSZ)音乐服务解析出可播放地址，
+    // 因此只需维护 id / name / artist / cover 即可；用户也可在播放器面板里通过「点歌」搜索并加入队列。
     {
-      name: '风を共に舞う気持ち',
-      artist: 'Falcom Sound Team jdk',
-      url: 'https://music.163.com/song/media/outer/url?id=731419.mp3',
+      id: 449818741, // 网易云歌曲 ID
+      name: '光年之外',
+      artist: 'G.E.M.邓紫棋',
       cover:
-        'https://p2.music.126.net/kn6ugISTonvqJh3LHLaPtQ==/599233837187278.jpg'
+        'https://p4.music.126.net/fkqFqMaEt0CzxYS-0NpCog==/18587244069235039.jpg'
     },
     {
-      name: '王都グランセル',
-      artist: 'Falcom Sound Team jdk',
-      url: 'https://music.163.com/song/media/outer/url?id=731355.mp3',
+      id: 108914, // 网易云歌曲 ID
+      name: '江南',
+      artist: '林俊杰',
       cover:
-        'https://p1.music.126.net/kn6ugISTonvqJh3LHLaPtQ==/599233837187278.jpg'
+        'https://p3.music.126.net/Gk4t93WwafRZtt9nTS77Iw==/109951171891430447.jpg'
     }
   ],
   MUSIC_PLAYER_METING: process.env.NEXT_PUBLIC_MUSIC_PLAYER_METING || false, // 是否要开启 MetingJS，从平台获取歌单。会覆盖自定义的 MUSIC_PLAYER_AUDIO_LIST，更多配置信息：https://github.com/metowolf/MetingJS
