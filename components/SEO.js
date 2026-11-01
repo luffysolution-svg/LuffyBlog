@@ -1,4 +1,6 @@
 import { siteConfig } from '@/lib/config'
+import BLOG from '@/blog.config'
+import { resolveSiteLanguage } from '@/lib/utils/siteLanguage'
 import { useGlobal } from '@/lib/global'
 import { createSiteUrl, normalizeSiteUrl } from '@/lib/sitemap-utils'
 import { isHttpLink, loadExternalResource } from '@/lib/utils'
@@ -67,7 +69,7 @@ const SEO = props => {
   const description = meta?.description || `${siteInfo?.description}`
   const type = meta?.type === 'Post' ? 'article' : meta?.type || 'website'
   const language =
-    NOTION_CONFIG?.LANG || router?.locale || siteConfig('LANG', 'zh-CN', NOTION_CONFIG)
+    resolveSiteLanguage(NOTION_CONFIG?.LANG, router?.locale, router?.defaultLocale || BLOG.LANG)
   const lang = String(language).replace('-', '_') // Facebook OpenGraph 要 zh_CN 這樣的格式才抓得到語言
   const category = Array.isArray(meta?.category)
     ? meta?.category?.[0]

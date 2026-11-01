@@ -317,6 +317,8 @@ Hexo 订阅区支持以下 Notion 配置，Mailchimp 的列表 ID 和 API 密钥
 
 `POST_LIST_STYLE`（`page` / `scroll`）、`POSTS_PER_PAGE`、`POST_RECOMMEND_COUNT` 和 `HEXO_POST_LIST_SUMMARY` 可通过 Notion 调整 Hexo 的文章列表与推荐展示。`LANG` 控制界面文案；新增语言路由仍需要调整构建配置。
 
+访问显式语言路由（例如 `/en`）时，路由语言优先于 Notion 的默认 `LANG`。订阅文案可增加语言后缀，例如 `MAILCHIMP_TITLE_EN`、`MAILCHIMP_DESCRIPTION_EN`；没有填写对应配置时使用该语言的默认文案。
+
 迁移时先将当前有效值写入 Notion 并核对线上效果，再清理对应的环境变量。不要将服务端密钥放入公开的 Config 表。
 
 LuffyBlog 完成迁移后，Vercel 仅保留以下七项，日常展示信息统一在 Notion Config 维护：

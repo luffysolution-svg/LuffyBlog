@@ -1,5 +1,6 @@
 // eslint-disable-next-line @next/next/no-document-import-in-page
 import BLOG from '@/blog.config'
+import { resolveSiteLanguage } from '@/lib/utils/siteLanguage'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
 
 const isLocalFontAwesome = BLOG.FONT_AWESOME?.startsWith(
@@ -46,7 +47,7 @@ class MyDocument extends Document {
   render() {
     const config = this.props.__NEXT_DATA__?.props?.pageProps?.NOTION_CONFIG || {}
     return (
-      <Html lang={config.LANG || BLOG.LANG}>
+      <Html lang={resolveSiteLanguage(config.LANG, this.props.locale, this.props.defaultLocale || BLOG.LANG)}>
         <Head>
           <link rel='preconnect' href='https://images.unsplash.com' />
           <link rel='dns-prefetch' href='//images.unsplash.com' />

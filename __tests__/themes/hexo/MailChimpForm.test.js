@@ -31,4 +31,16 @@ describe('Notion-controlled newsletter form', () => {
     await waitFor(() => expect(subscribeToNewsletter).toHaveBeenCalledWith('reader@example.com'))
     expect(await screen.findByText('Subscribed')).toBeInTheDocument()
   })
+
+  it('uses the English Notion copy on the explicit English route', () => {
+    jest.spyOn(require('@/lib/global'), 'useGlobal').mockReturnValue({
+      lang: 'en',
+      locale: { MAILCHIMP: { SUBSCRIBE: 'Subscribe', MSG: 'Monthly updates', EMAIL: 'Email' } }
+    })
+    const settings = { LANG: 'zh-CN', MAILCHIMP_TITLE: '邮件订阅', MAILCHIMP_TITLE_EN: 'Newsletter' }
+    siteConfig.mockImplementation((key, fallback) => settings[key] ?? fallback)
+    render(<MailChimpForm />)
+    expect(screen.getByRole('heading', { name: 'Newsletter' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: '邮件订阅' })).not.toBeInTheDocument()
+  })
 })
