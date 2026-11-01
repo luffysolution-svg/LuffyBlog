@@ -319,6 +319,15 @@ Hexo 订阅区支持以下 Notion 配置，Mailchimp 的列表 ID 和 API 密钥
 
 迁移时先将当前有效值写入 Notion 并核对线上效果，再清理对应的环境变量。不要将服务端密钥放入公开的 Config 表。
 
+LuffyBlog 完成迁移后，Vercel 仅保留以下七项，日常展示信息统一在 Notion Config 维护：
+
+- `NOTION_PAGE_ID`：Notion 数据库入口。
+- `MAILCHIMP_LIST_ID`、`MAILCHIMP_DATA_CENTER`、`MAILCHIMP_API_KEY`：邮件服务连接及凭证。
+- `CHKSZ_API_KEY`：音乐服务凭证。
+- `NEXT_PUBLIC_LANG`、`NEXT_PUBLIC_SITE_LOCALES`：构建默认语言及可用语言路由。
+
+当前播放器使用 `MUSIC_PLAYER`、`MUSIC_PLAYER_VISIBLE`、`MUSIC_PLAYER_ORDER` 和 `MUSIC_PLAYER_AUDIO_LIST`。旧的 Meting 和自动播放变量未被当前播放器读取，迁移时已移除这些无效部署变量。
+
 ## 原文链接
 
 https://docs.tangly1024.com/article/how-to-config-notion-next
