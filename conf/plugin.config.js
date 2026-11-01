@@ -12,6 +12,15 @@ module.exports = {
   // AI 相关配置已迁移至 conf/ai.config.js
 
   // 邮件
+  MAILCHIMP_ENABLE: true, // 订阅区开关及以下文案可在 Notion Config 修改，空值保留为空
+  MAILCHIMP_TITLE: null,
+  MAILCHIMP_DESCRIPTION: null,
+  MAILCHIMP_EMAIL_PLACEHOLDER: null,
+  MAILCHIMP_BUTTON_TEXT: null,
+  MAILCHIMP_SUBMITTING_TEXT: null,
+  MAILCHIMP_SUCCESS_TEXT: null,
+  MAILCHIMP_ERROR_TEXT: null,
   MAILCHIMP_LIST_ID: process.env.MAILCHIMP_LIST_ID || null, // 开启mailichimp邮件订阅 客户列表ID ，具体使用方法参阅文档
-  MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY || null // 开启mailichimp邮件订阅 APIkey
+  MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY || null, // 开启mailichimp邮件订阅 APIkey
+  MAILCHIMP_DATA_CENTER: process.env.MAILCHIMP_DATA_CENTER || null
 }

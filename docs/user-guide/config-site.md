@@ -291,6 +291,34 @@ NEXT_PUBLIC_LINK=http://xxx.com
 
 这该如何更改？需要访问这个主题的说明文档，请参阅此文档教程的 [《⭐️主题配置》](/user-guide/themes/overview)部分
 
+## 以 Notion 作为日常配置入口
+
+作者、标题、简介、联系方式、Hexo 外观、评论参数、播放器、挂件和特效等展示设置，可以集中放在 Config 表中维护。配置名使用代码中的名称，例如 `THEME`，不是 Vercel 中的 `NEXT_PUBLIC_THEME`。
+
+- 勾选「启用」后，Notion 配置优先于环境变量及代码默认值，`THEME_SWITCH` 也遵循此顺序。
+- 关闭开关请填写 `false`，数量为零请填写 `0`。启用的空文本可用于清除联系方式；取消勾选则恢复默认配置。
+- 数组和对象使用 JSON，例如 `MUSIC_PLAYER_AUDIO_LIST`；每个配置尽量只维护一处，避免与 `INLINE_CONFIG` 中的同名设置冲突。
+- 首页图片优先读取 `HOME_BANNER_IMAGE`；将它留空后，会使用 Notion 数据库自身的封面。
+- 保存后，等待页面缓存重新拉取并刷新页面。默认刷新间隔为 60 秒，不是保存后立刻向所有已打开的页面推送更新。
+- `NOTION_PAGE_ID`、访问凭证、服务端 API 密钥、域名绑定以及构建需要的默认语言和支持语言列表，继续由部署环境管理。
+
+Hexo 订阅区支持以下 Notion 配置，Mailchimp 的列表 ID 和 API 密钥仍保留在服务端环境变量中：
+
+| 配置名 | 用途 |
+| --- | --- |
+| `MAILCHIMP_ENABLE` | 是否显示订阅区 |
+| `MAILCHIMP_TITLE` | 标题 |
+| `MAILCHIMP_DESCRIPTION` | 介绍文字 |
+| `MAILCHIMP_EMAIL_PLACEHOLDER` | 邮箱输入提示 |
+| `MAILCHIMP_BUTTON_TEXT` | 提交按钮文字 |
+| `MAILCHIMP_SUBMITTING_TEXT` | 提交中的提示 |
+| `MAILCHIMP_SUCCESS_TEXT` | 成功提示 |
+| `MAILCHIMP_ERROR_TEXT` | 失败提示 |
+
+`POST_LIST_STYLE`（`page` / `scroll`）、`POSTS_PER_PAGE`、`POST_RECOMMEND_COUNT` 和 `HEXO_POST_LIST_SUMMARY` 可通过 Notion 调整 Hexo 的文章列表与推荐展示。`LANG` 控制界面文案；新增语言路由仍需要调整构建配置。
+
+迁移时先将当前有效值写入 Notion 并核对线上效果，再清理对应的环境变量。不要将服务端密钥放入公开的 Config 表。
+
 ## 原文链接
 
 https://docs.tangly1024.com/article/how-to-config-notion-next

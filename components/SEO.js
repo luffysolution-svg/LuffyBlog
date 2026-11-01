@@ -67,7 +67,7 @@ const SEO = props => {
   const description = meta?.description || `${siteInfo?.description}`
   const type = meta?.type === 'Post' ? 'article' : meta?.type || 'website'
   const language =
-    router?.locale || siteConfig('LANG', 'zh-CN', NOTION_CONFIG)
+    NOTION_CONFIG?.LANG || router?.locale || siteConfig('LANG', 'zh-CN', NOTION_CONFIG)
   const lang = String(language).replace('-', '_') // Facebook OpenGraph 要 zh_CN 這樣的格式才抓得到語言
   const category = Array.isArray(meta?.category)
     ? meta?.category?.[0]

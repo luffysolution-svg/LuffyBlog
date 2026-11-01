@@ -279,9 +279,9 @@ const fixThemeDOM = () => {
  * @param updateDarkMode 更改主题ChangeState函数
  * @description 读取cookie中存的用户主题
  */
-export const initDarkMode = (updateDarkMode, defaultDarkMode) => {
+export const initDarkMode = (updateDarkMode, defaultDarkMode, darkTime) => {
   // 查看用户设备浏览器是否深色模型
-  let newDarkMode = isPreferDark()
+  let newDarkMode = isPreferDark(defaultDarkMode, darkTime)
 
   // 查看localStorage中用户记录的是否深色模式
   const userDarkMode = loadDarkModeFromLocalStorage()
@@ -311,11 +311,11 @@ export const initDarkMode = (updateDarkMode, defaultDarkMode) => {
  * 是否优先深色模式， 根据系统深色模式以及当前时间判断
  * @returns {*}
  */
-export function isPreferDark() {
-  if (BLOG.APPEARANCE === 'dark') {
+export function isPreferDark(appearance = BLOG.APPEARANCE, darkTime = BLOG.APPEARANCE_DARK_TIME) {
+  if (appearance === 'dark') {
     return true
   }
-  if (BLOG.APPEARANCE === 'auto') {
+  if (appearance === 'auto') {
     // 系统深色模式或时间是夜间时，强行置为夜间模式
     const date = new Date()
     const prefersDarkMode = window.matchMedia(
@@ -323,9 +323,9 @@ export function isPreferDark() {
     ).matches
     return (
       prefersDarkMode ||
-      (BLOG.APPEARANCE_DARK_TIME &&
-        (date.getHours() >= BLOG.APPEARANCE_DARK_TIME[0] ||
-          date.getHours() < BLOG.APPEARANCE_DARK_TIME[1]))
+      (darkTime &&
+        (date.getHours() >= darkTime[0] ||
+          date.getHours() < darkTime[1]))
     )
   }
   return false

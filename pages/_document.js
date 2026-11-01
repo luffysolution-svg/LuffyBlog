@@ -7,14 +7,14 @@ const isLocalFontAwesome = BLOG.FONT_AWESOME?.startsWith(
 )
 
 // 预先设置深色模式的脚本内容
-const darkModeScript = `
+const darkModeScript = (appearance, darkTime) => `
 (function() {
   const darkMode = localStorage.getItem('darkMode')
 
   const prefersDark =
     window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
 
-  const defaultAppearance = '${BLOG.APPEARANCE || 'auto'}'
+  const defaultAppearance = ${JSON.stringify(appearance)}
 
   let shouldBeDark = darkMode === 'true' || darkMode === 'dark'
 
@@ -25,10 +25,10 @@ const darkModeScript = `
       // 检查是否在深色模式时间范围内
       const date = new Date()
       const hours = date.getHours()
-      const darkTimeStart = ${BLOG.APPEARANCE_DARK_TIME ? BLOG.APPEARANCE_DARK_TIME[0] : 18}
-      const darkTimeEnd = ${BLOG.APPEARANCE_DARK_TIME ? BLOG.APPEARANCE_DARK_TIME[1] : 6}
+      const darkTimeStart = ${darkTime ? darkTime[0] : 18}
+      const darkTimeEnd = ${darkTime ? darkTime[1] : 6}
       
-      shouldBeDark = prefersDark || (hours >= darkTimeStart || hours < darkTimeEnd)
+      shouldBeDark = prefersDark || (${Boolean(darkTime)} && (hours >= darkTimeStart || hours < darkTimeEnd))
     }
   }
   
@@ -44,8 +44,9 @@ class MyDocument extends Document {
   }
 
   render() {
+    const config = this.props.__NEXT_DATA__?.props?.pageProps?.NOTION_CONFIG || {}
     return (
-      <Html lang={BLOG.LANG}>
+      <Html lang={config.LANG || BLOG.LANG}>
         <Head>
           <link rel='preconnect' href='https://images.unsplash.com' />
           <link rel='dns-prefetch' href='//images.unsplash.com' />
@@ -103,7 +104,7 @@ class MyDocument extends Document {
           )}
 
           {/* 预先设置深色模式，避免闪烁 */}
-          <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
+          <script dangerouslySetInnerHTML={{ __html: darkModeScript(config.APPEARANCE || BLOG.APPEARANCE || 'auto', config.APPEARANCE_DARK_TIME ?? BLOG.APPEARANCE_DARK_TIME) }} />
         </Head>
 
         <body>

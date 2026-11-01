@@ -3,6 +3,7 @@ import { useGlobal } from '@/lib/global'
 import BlogPostCard from './BlogPostCard'
 import BlogPostListEmpty from './BlogPostListEmpty'
 import PaginationNumber from './PaginationNumber'
+import CONFIG from '../config'
 
 /**
  * 文章列表分页表格
@@ -30,6 +31,7 @@ const BlogPostListPage = ({ page = 1, posts = [], postCount, siteInfo }) => {
               key={post.id}
               post={post}
               siteInfo={siteInfo}
+              showSummary={siteConfig('HEXO_POST_LIST_SUMMARY', true, CONFIG)}
             />
           ))}
         </div>
