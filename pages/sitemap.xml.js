@@ -14,6 +14,9 @@ import { getServerSideSitemap } from 'next-sitemap'
 export const getServerSideProps = async ctx => {
   let fields = []
   const siteIds = BLOG.NOTION_PAGE_ID.split(',')
+  for (const locale of (process.env.NEXT_PUBLIC_SITE_LOCALES || '').split(',').map(value => value.trim()).filter(Boolean)) {
+    if (locale !== BLOG.LANG && !siteIds.some(siteId => extractLangPrefix(siteId) === locale)) siteIds.push(`${locale}:${extractLangId(siteIds[0])}`)
+  }
 
   for (let index = 0; index < siteIds.length; index++) {
     const siteId = siteIds[index]
@@ -22,14 +25,15 @@ export const getServerSideProps = async ctx => {
     // 第一个id站点默认语言
     const siteData = await fetchGlobalAllData({
       pageId: id,
-      from: 'sitemap.xml'
+      from: 'sitemap.xml',
+      locale
     })
     const link = siteConfig(
       'LINK',
       siteData?.siteInfo?.link,
       siteData.NOTION_CONFIG
     )
-    const localeFields = generateLocalesSitemap(link, siteData.allPages, locale)
+    const localeFields = generateLocalesSitemap(link, siteData.allPages, locale, siteData.NOTION_CONFIG)
     fields = fields.concat(localeFields)
   }
 
@@ -43,7 +47,7 @@ export const getServerSideProps = async ctx => {
   return getServerSideSitemap(ctx, fields)
 }
 
-function generateLocalesSitemap(link, allPages, locale) {
+function generateLocalesSitemap(link, allPages, locale, NOTION_CONFIG = {}) {
   const normalizedLink = normalizeSitemapBaseUrl(link)
   const normalizedLocale = normalizeSitemapLocale(locale)
   const dateNow = toSitemapDateString(new Date())
@@ -106,17 +110,21 @@ function generateLocalesSitemap(link, allPages, locale) {
       priority: '0.7'
     }
   ].filter(field => Boolean(field?.loc))
+  for (const [slug, enabled] of [['series', NOTION_CONFIG.SERIES_ENABLE], ['projects', NOTION_CONFIG.PROJECTS_ENABLE]]) {
+    if (enabled !== false) defaultFields.push({ loc: buildSitemapLoc({ baseUrl: normalizedLink, locale: normalizedLocale, slug }), lastmod: dateNow, changefreq: 'weekly', priority: '0.7' })
+  }
 
   const postFields =
     allPages
       ?.filter(p => p.status === BLOG.NOTION_PROPERTY_NAME.status_publish)
+      ?.filter(p => !['Project', 'Translation'].includes(p.type) && !(p.type === 'Series' && NOTION_CONFIG.SERIES_ENABLE === false))
       // 过滤掉外部链接(http开头)和锚点链接(#开头)
       ?.filter(p => p.slug && !p.slug.startsWith('http') && !p.slug.startsWith('#'))
       ?.map(post => {
         const loc = buildSitemapLoc({
           baseUrl: normalizedLink,
           locale: normalizedLocale,
-          slug: post?.slug
+          slug: post.type === 'Series' ? post.href : post?.slug
         })
         if (!loc) return null
 

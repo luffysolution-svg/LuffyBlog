@@ -1,4 +1,5 @@
 import Comment from '@/components/Comment'
+import ContentCollections from '@/components/ContentCollections'
 import replaceSearchResult from '@/components/Mark'
 import NotionPage from '@/components/NotionPage'
 import ShareBar from '@/components/ShareBar'
@@ -14,6 +15,7 @@ import ArticleAdjacent from './components/ArticleAdjacent'
 import ArticleCopyright from './components/ArticleCopyright'
 import { ArticleLock } from './components/ArticleLock'
 import ArticleRecommend from './components/ArticleRecommend'
+import ArticleSeries from './components/ArticleSeries'
 import BlogPostArchive from './components/BlogPostArchive'
 import BlogPostListPage from './components/BlogPostListPage'
 import BlogPostListScroll from './components/BlogPostListScroll'
@@ -121,7 +123,7 @@ const LayoutBase = props => {
         {/* 主区块 */}
         <main
           id='wrapper'
-          className={`${siteConfig('HEXO_HOME_BANNER_ENABLE', null, CONFIG) ? 'pt-0' : 'pt-16'} bg-hexo-background-gray dark:bg-black w-full md:px-8 lg:px-24 min-h-screen relative`}>
+          className={`${headerSlot ? 'pt-0' : 'pt-16'} bg-hexo-background-gray dark:bg-black w-full md:px-8 lg:px-24 min-h-screen relative`}>
           <div
             id='container-inner'
             className={
@@ -184,6 +186,10 @@ const LayoutBase = props => {
 const LayoutIndex = props => {
   return <LayoutPostList {...props} className='pt-8' />
 }
+
+const LayoutCollections = props => (
+  <ContentCollections {...props} kind={props.collectionKind} title={props.collectionTitle} description={props.collectionDescription} />
+)
 
 /**
  * 博客列表
@@ -315,6 +321,7 @@ const LayoutSlug = props => {
               {post?.type === 'Post' && (
                 <>
                   <ArticleCopyright {...props} />
+                  <ArticleSeries {...props} />
                   <ArticleRecommend {...props} />
                   <ArticleAdjacent {...props} />
                 </>
@@ -397,7 +404,7 @@ const LayoutCategoryIndex = props => {
                   className={
                     ' duration-300 dark:hover:text-white px-5 cursor-pointer py-2 hover:text-indigo-400'
                   }>
-                  <i className='mr-4 fas fa-folder' /> {category.name}(
+                  <i className='mr-4 fas fa-folder' /> {category.label || category.name}(
                   {category.count})
                 </div>
               </SmartLink>
@@ -440,6 +447,7 @@ export {
   LayoutArchive,
   LayoutBase,
   LayoutCategoryIndex,
+  LayoutCollections,
   LayoutIndex,
   LayoutPostList,
   LayoutSearch,

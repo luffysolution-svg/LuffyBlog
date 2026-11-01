@@ -332,4 +332,6 @@ LuffyBlog 完成迁移后，Vercel 仅保留以下七项，日常展示信息统
 
 ## 原文链接
 
+专题、项目展示和完整英文版的日常编辑方式见[用 Notion 管理专题、项目和英文版](./notion/content-center.md)。
+
 https://docs.tangly1024.com/article/how-to-config-notion-next

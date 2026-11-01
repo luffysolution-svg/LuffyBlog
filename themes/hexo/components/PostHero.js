@@ -43,7 +43,7 @@ export default function PostHero({ post, siteInfo }) {
                   passHref
                   legacyBehavior>
                   <div className='cursor-pointer px-2 py-1 mb-2 border rounded-sm dark:border-white text-sm font-medium hover:underline duration-200 shadow-text-md text-white'>
-                    {post.category}
+                    {post.categoryLabel || post.category}
                   </div>
                 </SmartLink>
               </>

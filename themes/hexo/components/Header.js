@@ -155,28 +155,31 @@ const Header = props => {
           'top-0 duration-300 transition-all  shadow-none fixed bg-none dark:bg-hexo-black-gray dark:text-gray-200 text-black w-full z-20 transform border-transparent dark:border-transparent'
         }>
         <div className='w-full flex justify-between items-center px-4 py-2'>
-          <div className='flex'>
+          <div className='flex shrink-0'>
             <Logo {...props} />
           </div>
 
           {/* 右侧功能 */}
-          <div className='mr-1 flex justify-end items-center '>
-            <div className='hidden lg:flex'>
+          <div className='mr-1 flex min-w-0 shrink-0 items-center justify-end gap-1'>
+            <div className='hidden min-[1120px]:flex'>
               {' '}
               <MenuListTop {...props} />
             </div>
             <LanguageSwitcher />
-            <div
+            <button
+              type='button'
+              aria-label={locale.COMMON.MORE}
+              aria-expanded={isOpen}
               onClick={toggleMenuOpen}
-              className='w-8 justify-center items-center h-8 cursor-pointer flex lg:hidden'>
+              className='w-8 justify-center items-center h-8 cursor-pointer flex min-[1120px]:hidden'>
               {isOpen ? (
                 <i className='fas fa-times' />
               ) : (
                 <i className='fas fa-bars' />
               )}
-            </div>
+            </button>
             {showSearchButton && <SearchButton />}
-            {showRandomButton && <ButtonRandomPost {...props} />}
+            {showRandomButton && <span className='hidden sm:inline-flex'><ButtonRandomPost {...props} /></span>}
           </div>
         </div>
       </div>

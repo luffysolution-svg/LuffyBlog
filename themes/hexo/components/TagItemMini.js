@@ -12,7 +12,7 @@ const TagItemMini = ({ tag, selected = false }) => {
         ? 'text-white dark:text-gray-300 bg-black dark:bg-black dark:hover:bg-indigo-900'
         : `text-gray-600 hover:shadow-xl dark:border-gray-400 notion-${tag.color}_background `}` }>
 
-      <div className='font-light'>{selected && <i className='mr-1 fa-tag'/>} {tag.name + (tag.count ? `(${tag.count})` : '')} </div>
+      <div className='font-light'>{selected && <i className='mr-1 fa-tag'/>} {(tag.label || tag.name) + (tag.count ? `(${tag.count})` : '')} </div>
 
     </SmartLink>
   );

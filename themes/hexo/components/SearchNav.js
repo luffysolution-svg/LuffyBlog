@@ -42,7 +42,7 @@ export default function SearchNav(props) {
                               }
                           >
                               <i className="mr-4 fas fa-folder" />
-                              {category.name}({category.count})
+                              {category.label || category.name}({category.count})
                           </div>
                       </SmartLink>
                   )

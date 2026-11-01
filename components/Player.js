@@ -1,4 +1,5 @@
 import { siteConfig } from '@/lib/config'
+import { getGlobalSnapshot } from '@/lib/global'
 import {
   IconAlertCircle,
   IconChevronDown,
@@ -18,6 +19,83 @@ import {
 import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styles from './Player.module.css'
+
+const PLAYER_ENGLISH = {
+  标准: 'Standard',
+  极高: 'High',
+  无损: 'Lossless',
+  母带: 'Master',
+  未知歌曲: 'Unknown track',
+  未知歌手: 'Unknown artist',
+  音乐服务暂时不可用: 'Music is temporarily unavailable',
+  歌曲: 'Track',
+  封面: ' cover',
+  '将 ': 'Add ',
+  ' 加入队列': ' to queue',
+  这首歌曲没有可用的音频地址: 'No audio is available for this track',
+  '歌曲播放失败，请尝试其他版本': 'Playback failed. Try another version.',
+  '浏览器阻止了播放，请再次点击播放': 'Click Play again to allow playback.',
+  请输入歌曲或歌手名称: 'Enter a song or artist name',
+  '搜索失败，请稍后再试': 'Search failed. Please try again.',
+  歌曲已在队列中: 'Already in the queue',
+  已加入播放队列: 'Added to the queue',
+  '音频加载失败，请尝试其他歌曲或音质':
+    'Audio could not load. Try another track or quality.',
+  音乐点歌面板: 'Music panel',
+  搜索一首喜欢的歌: 'Find a song you like',
+  'LuffyBlog 音乐': 'LuffyBlog Music',
+  关闭点歌面板: 'Close music panel',
+  音质: 'Quality',
+  音量: 'Volume',
+  音乐面板功能: 'Music controls',
+  点歌: 'Search',
+  队列: 'Queue',
+  歌词: 'Lyrics',
+  关闭: 'Close',
+  '搜索歌曲、歌手或专辑': 'Search songs, artists, or albums',
+  '例如：邓紫棋 光年之外': 'For example: artist and song title',
+  搜索中: 'Searching',
+  搜索: 'Search',
+  '请核对歌手与专辑，搜索结果可能包含翻唱版本。':
+    'Check the artist and album: results may include cover versions.',
+  正在搜索: 'Searching',
+  找到约: 'About ',
+  '个结果，显示前': ' results, showing ',
+  个: '',
+  未知专辑: 'Unknown album',
+  播放: 'Play',
+  加入队列: 'Add to queue',
+  从队列移除: 'Remove from queue',
+  没有找到合适的歌曲: 'No matching tracks',
+  '可以换用“歌手 + 歌名”再次搜索。':
+    'Try searching for the artist and song title.',
+  输入关键词开始点歌: 'Search for a song',
+  '选择正确版本后即可播放或加入队列。':
+    'Choose a version to play or add to the queue.',
+  播放队列还是空的: 'Your queue is empty',
+  去点一首歌: 'Find a song',
+  正在加载歌词: 'Loading lyrics',
+  这首歌暂无歌词: 'No lyrics available',
+  还没有播放歌曲: 'No track selected',
+  '可以继续听歌或选择其他版本。': 'Keep listening or choose another version.',
+  '点歌后会在这里显示同步歌词。':
+    'Synced lyrics will appear here during playback.',
+  音乐播放器: 'Music player',
+  暂停: 'Pause',
+  搜索点歌: 'Find a song',
+  点击打开音乐面板: 'Open the music panel',
+  上一首: 'Previous track',
+  下一首: 'Next track',
+  播放队列: 'Play queue',
+  收起播放器: 'Collapse player',
+  播放进度: 'Playback position',
+  展开音乐播放器: 'Expand music player'
+}
+
+const playerText = value =>
+  /^en(?:-|$)/i.test(getGlobalSnapshot()?.lang || '')
+    ? (PLAYER_ENGLISH[value] ?? value)
+    : value
 
 const QUALITY_OPTIONS = [
   { value: 'standard', label: '标准' },
@@ -44,8 +122,8 @@ const formatTime = seconds => {
 const normalizeTrack = (track, index = 0) => ({
   key: track.key || (track.id ? `163-${track.id}` : `config-${index}`),
   id: track.id ? String(track.id) : '',
-  name: String(track.name || track.title || '未知歌曲'),
-  artist: String(track.artist || track.author || '未知歌手'),
+  name: String(track.name || track.title || playerText('未知歌曲')),
+  artist: String(track.artist || track.author || playerText('未知歌手')),
   album: String(track.album || ''),
   cover: String(track.cover || track.pic || ''),
   url: String(track.url || ''),
@@ -101,7 +179,7 @@ const requestJson = async (url, options = {}) => {
   const response = await fetch(url, options)
   const body = await response.json().catch(() => ({}))
   if (!response.ok) {
-    throw new Error(body.error || '音乐服务暂时不可用')
+    throw new Error(body.error || playerText('音乐服务暂时不可用'))
   }
   return body.data
 }
@@ -123,7 +201,7 @@ const TrackCover = ({ track, playing = false, size = 'dock' }) => {
       {track?.cover ? (
         <Image
           src={track.cover}
-          alt={`${track.name || '歌曲'}封面`}
+          alt={`${track.name || playerText('歌曲')}${playerText('封面')}`}
           fill
           sizes={size === 'panel' ? '64px' : size === 'list' ? '44px' : '48px'}
           unoptimized
@@ -294,7 +372,7 @@ const Player = () => {
     async (track, requestedLevel = quality) => {
       const isFresh = Date.now() - track.resolvedAt < 90 * 1000
       if (track.url && (track.source !== 'chksz' || isFresh)) return track
-      if (!track.id) throw new Error('这首歌曲没有可用的音频地址')
+      if (!track.id) throw new Error(playerText('这首歌曲没有可用的音频地址'))
 
       const data = await requestJson(
         `/api/music/resolve?id=${encodeURIComponent(
@@ -356,7 +434,9 @@ const Player = () => {
         if (shouldPlay) await audio.play()
       } catch (playError) {
         if (requestId === playRequestRef.current) {
-          setError(playError.message || '歌曲播放失败，请尝试其他版本')
+          setError(
+            playError.message || playerText('歌曲播放失败，请尝试其他版本')
+          )
           setPanelOpen(true)
         }
       } finally {
@@ -381,7 +461,9 @@ const Player = () => {
     }
 
     if (audio?.src && loadedTrackKeyRef.current === currentTrack.key) {
-      audio.play().catch(() => setError('浏览器阻止了播放，请再次点击播放'))
+      audio
+        .play()
+        .catch(() => setError(playerText('浏览器阻止了播放，请再次点击播放')))
     } else {
       loadTrack(currentTrack, true)
     }
@@ -406,7 +488,7 @@ const Player = () => {
     event?.preventDefault()
     const query = searchQuery.trim()
     if (!query) {
-      setError('请输入歌曲或歌手名称')
+      setError(playerText('请输入歌曲或歌手名称'))
       return
     }
 
@@ -421,7 +503,7 @@ const Player = () => {
       setSearchTotal(Number(data.total || 0))
     } catch (searchError) {
       setSearchResults([])
-      setError(searchError.message || '搜索失败，请稍后再试')
+      setError(searchError.message || playerText('搜索失败，请稍后再试'))
     } finally {
       setIsSearching(false)
     }
@@ -431,7 +513,9 @@ const Player = () => {
     const normalized = normalizeTrack(track)
     const exists = queue.some(item => item.key === normalized.key)
     if (!exists) setQueue(previous => [...previous, normalized])
-    setNotice(exists ? '歌曲已在队列中' : '已加入播放队列')
+    setNotice(
+      exists ? playerText('歌曲已在队列中') : playerText('已加入播放队列')
+    )
   }
 
   const playSearchResult = track => {
@@ -537,7 +621,7 @@ const Player = () => {
         onEnded={() => playAdjacent(1)}
         onError={() => {
           if (audioRef.current?.src) {
-            setError('音频加载失败，请尝试其他歌曲或音质')
+            setError(playerText('音频加载失败，请尝试其他歌曲或音质'))
             setPanelOpen(true)
           }
         }}
@@ -547,7 +631,7 @@ const Player = () => {
         <section
           className={styles.panel}
           role='dialog'
-          aria-label='音乐点歌面板'
+          aria-label={playerText('音乐点歌面板')}
         >
           <header className={styles.panelHeader}>
             <div className={styles.nowPlaying}>
@@ -557,8 +641,12 @@ const Player = () => {
                 size='panel'
               />
               <div className={styles.nowPlayingText}>
-                <strong>{currentTrack?.name || '搜索一首喜欢的歌'}</strong>
-                <span>{currentTrack?.artist || 'LuffyBlog 音乐'}</span>
+                <strong>
+                  {currentTrack?.name || playerText('搜索一首喜欢的歌')}
+                </strong>
+                <span>
+                  {currentTrack?.artist || playerText('LuffyBlog 音乐')}
+                </span>
                 {currentTrack?.level && (
                   <small>
                     {QUALITY_OPTIONS.find(
@@ -569,7 +657,7 @@ const Player = () => {
               </div>
             </div>
             <IconButton
-              label='关闭点歌面板'
+              label={playerText('关闭点歌面板')}
               onClick={() => setPanelOpen(false)}
             >
               <IconX size={19} stroke={1.8} />
@@ -578,18 +666,18 @@ const Player = () => {
 
           <div className={styles.panelControls}>
             <label className={styles.qualityControl}>
-              <span>音质</span>
+              <span>{playerText('音质')}</span>
               <select value={quality} onChange={changeQuality}>
                 {QUALITY_OPTIONS.map(option => (
                   <option key={option.value} value={option.value}>
-                    {option.label}
+                    {playerText(option.label)}
                   </option>
                 ))}
               </select>
             </label>
             <label className={styles.volumeControl}>
               <IconVolume size={17} stroke={1.7} aria-hidden='true' />
-              <span className={styles.srOnly}>音量</span>
+              <span className={styles.srOnly}>{playerText('音量')}</span>
               <input
                 type='range'
                 min='0'
@@ -601,11 +689,15 @@ const Player = () => {
             </label>
           </div>
 
-          <div className={styles.tabs} role='tablist' aria-label='音乐面板功能'>
+          <div
+            className={styles.tabs}
+            role='tablist'
+            aria-label={playerText('音乐面板功能')}
+          >
             {[
-              ['search', '点歌', IconSearch],
-              ['queue', `队列 ${queue.length}`, IconList],
-              ['lyrics', '歌词', IconMusic]
+              ['search', playerText('点歌'), IconSearch],
+              ['queue', `${playerText('队列')} ${queue.length}`, IconList],
+              ['lyrics', playerText('歌词'), IconMusic]
             ].map(([tab, label, Icon]) => (
               <button
                 key={tab}
@@ -626,7 +718,7 @@ const Player = () => {
               <IconAlertCircle size={17} stroke={1.8} aria-hidden='true' />
               <span>{error}</span>
               <button type='button' onClick={() => setError('')}>
-                关闭
+                {playerText('关闭')}
               </button>
             </div>
           )}
@@ -640,7 +732,9 @@ const Player = () => {
                     void runSearch(event)
                   }}
                 >
-                  <label htmlFor='music-search'>搜索歌曲、歌手或专辑</label>
+                  <label htmlFor='music-search'>
+                    {playerText('搜索歌曲、歌手或专辑')}
+                  </label>
                   <div className={styles.searchInputRow}>
                     <IconSearch size={18} stroke={1.8} aria-hidden='true' />
                     <input
@@ -649,18 +743,23 @@ const Player = () => {
                       maxLength={80}
                       value={searchQuery}
                       onChange={event => setSearchQuery(event.target.value)}
-                      placeholder='例如：邓紫棋 光年之外'
+                      placeholder={playerText('例如：邓紫棋 光年之外')}
                       autoComplete='off'
                     />
                     <button type='submit' disabled={isSearching}>
-                      {isSearching ? '搜索中' : '搜索'}
+                      {isSearching ? playerText('搜索中') : playerText('搜索')}
                     </button>
                   </div>
-                  <p>请核对歌手与专辑，搜索结果可能包含翻唱版本。</p>
+                  <p>
+                    {playerText('请核对歌手与专辑，搜索结果可能包含翻唱版本。')}
+                  </p>
                 </form>
 
                 {isSearching ? (
-                  <div className={styles.loadingList} aria-label='正在搜索'>
+                  <div
+                    className={styles.loadingList}
+                    aria-label={playerText('正在搜索')}
+                  >
                     {[0, 1, 2, 3].map(item => (
                       <span key={item} />
                     ))}
@@ -668,8 +767,10 @@ const Player = () => {
                 ) : searchResults.length > 0 ? (
                   <div className={styles.trackList}>
                     <p className={styles.resultCount}>
-                      找到约 {searchTotal} 个结果，显示前 {searchResults.length}{' '}
-                      个
+                      {playerText('找到约')}
+                      {searchTotal}
+                      {playerText('个结果，显示前')}
+                      {searchResults.length} {playerText('个')}
                     </p>
                     {searchResults.map(track => (
                       <article className={styles.trackRow} key={track.key}>
@@ -681,19 +782,19 @@ const Player = () => {
                         >
                           <strong>{track.name}</strong>
                           <span>{track.artist}</span>
-                          <small>{track.album || '未知专辑'}</small>
+                          <small>{track.album || playerText('未知专辑')}</small>
                         </button>
                         <span className={styles.trackDuration}>
                           {formatTime(track.duration / 1000)}
                         </span>
                         <IconButton
-                          label={`播放 ${track.name}`}
+                          label={`${playerText('播放')} ${track.name}`}
                           onClick={() => playSearchResult(track)}
                         >
                           <IconPlayerPlay size={17} stroke={1.9} />
                         </IconButton>
                         <IconButton
-                          label={`将 ${track.name} 加入队列`}
+                          label={`${playerText('将 ')}${track.name}${playerText(' 加入队列')}`}
                           onClick={() => addToQueue(track)}
                         >
                           <IconPlus size={18} stroke={1.9} />
@@ -704,14 +805,16 @@ const Player = () => {
                 ) : searchTouched ? (
                   <div className={styles.emptyState}>
                     <IconSearch size={28} stroke={1.5} aria-hidden='true' />
-                    <strong>没有找到合适的歌曲</strong>
-                    <span>可以换用“歌手 + 歌名”再次搜索。</span>
+                    <strong>{playerText('没有找到合适的歌曲')}</strong>
+                    <span>{playerText('可以换用“歌手 + 歌名”再次搜索。')}</span>
                   </div>
                 ) : (
                   <div className={styles.emptyState}>
                     <IconMusic size={30} stroke={1.5} aria-hidden='true' />
-                    <strong>输入关键词开始点歌</strong>
-                    <span>选择正确版本后即可播放或加入队列。</span>
+                    <strong>{playerText('输入关键词开始点歌')}</strong>
+                    <span>
+                      {playerText('选择正确版本后即可播放或加入队列。')}
+                    </span>
                   </div>
                 )}
               </div>
@@ -747,7 +850,7 @@ const Player = () => {
                           <span>{track.artist}</span>
                         </button>
                         <IconButton
-                          label={`播放 ${track.name}`}
+                          label={`${playerText('播放')} ${track.name}`}
                           onClick={() => {
                             void loadTrack(track, true)
                           }}
@@ -759,7 +862,7 @@ const Player = () => {
                           )}
                         </IconButton>
                         <IconButton
-                          label={`从队列移除 ${track.name}`}
+                          label={`${playerText('从队列移除')} ${track.name}`}
                           onClick={() => removeFromQueue(track)}
                         >
                           <IconTrash size={17} stroke={1.8} />
@@ -770,12 +873,12 @@ const Player = () => {
                 ) : (
                   <div className={styles.emptyState}>
                     <IconList size={30} stroke={1.5} aria-hidden='true' />
-                    <strong>播放队列还是空的</strong>
+                    <strong>{playerText('播放队列还是空的')}</strong>
                     <button
                       type='button'
                       onClick={() => setActiveTab('search')}
                     >
-                      去点一首歌
+                      {playerText('去点一首歌')}
                     </button>
                   </div>
                 )}
@@ -795,7 +898,7 @@ const Player = () => {
                 {isLoadingLyrics ? (
                   <div className={styles.lyricsLoading}>
                     <IconLoader2 size={24} stroke={1.7} aria-hidden='true' />
-                    正在加载歌词
+                    {playerText('正在加载歌词')}
                   </div>
                 ) : lyrics.length > 0 ? (
                   <div className={styles.lyricLines}>
@@ -827,12 +930,14 @@ const Player = () => {
                   <div className={styles.emptyState}>
                     <IconMusic size={30} stroke={1.5} aria-hidden='true' />
                     <strong>
-                      {currentTrack ? '这首歌暂无歌词' : '还没有播放歌曲'}
+                      {currentTrack
+                        ? playerText('这首歌暂无歌词')
+                        : playerText('还没有播放歌曲')}
                     </strong>
                     <span>
                       {currentTrack
-                        ? '可以继续听歌或选择其他版本。'
-                        : '点歌后会在这里显示同步歌词。'}
+                        ? playerText('可以继续听歌或选择其他版本。')
+                        : playerText('点歌后会在这里显示同步歌词。')}
                     </span>
                   </div>
                 )}
@@ -845,13 +950,13 @@ const Player = () => {
       {dockOpen ? (
         <div
           className={`${styles.dock} ${panelOpen ? styles.dockPanelOpen : ''}`}
-          aria-label='音乐播放器'
+          aria-label={playerText('音乐播放器')}
         >
           <button
             type='button'
             className={styles.coverButton}
             onClick={togglePlayback}
-            aria-label={isPlaying ? '暂停' : '播放'}
+            aria-label={isPlaying ? playerText('暂停') : playerText('播放')}
           >
             <TrackCover track={currentTrack} playing={isPlaying} />
             <span className={styles.coverOverlay}>
@@ -870,16 +975,21 @@ const Player = () => {
             className={styles.dockTrackInfo}
             onClick={() => openPanel(currentTrack ? 'lyrics' : 'search')}
           >
-            <strong>{currentTrack?.name || '搜索点歌'}</strong>
-            <span>{currentTrack?.artist || '点击打开音乐面板'}</span>
+            <strong>{currentTrack?.name || playerText('搜索点歌')}</strong>
+            <span>
+              {currentTrack?.artist || playerText('点击打开音乐面板')}
+            </span>
           </button>
 
           <div className={styles.dockControls}>
-            <IconButton label='上一首' onClick={() => playAdjacent(-1)}>
+            <IconButton
+              label={playerText('上一首')}
+              onClick={() => playAdjacent(-1)}
+            >
               <IconPlayerSkipBack size={17} stroke={1.9} />
             </IconButton>
             <IconButton
-              label={isPlaying ? '暂停' : '播放'}
+              label={isPlaying ? playerText('暂停') : playerText('播放')}
               className={styles.primaryControl}
               disabled={isResolving}
               onClick={togglePlayback}
@@ -892,19 +1002,31 @@ const Player = () => {
                 <IconPlayerPlay size={18} stroke={2} />
               )}
             </IconButton>
-            <IconButton label='下一首' onClick={() => playAdjacent(1)}>
+            <IconButton
+              label={playerText('下一首')}
+              onClick={() => playAdjacent(1)}
+            >
               <IconPlayerSkipForward size={17} stroke={1.9} />
             </IconButton>
           </div>
 
           <div className={styles.dockActions}>
-            <IconButton label='搜索点歌' onClick={() => openPanel('search')}>
+            <IconButton
+              label={playerText('搜索点歌')}
+              onClick={() => openPanel('search')}
+            >
               <IconSearch size={17} stroke={1.8} />
             </IconButton>
-            <IconButton label='播放队列' onClick={() => openPanel('queue')}>
+            <IconButton
+              label={playerText('播放队列')}
+              onClick={() => openPanel('queue')}
+            >
               <IconList size={17} stroke={1.8} />
             </IconButton>
-            <IconButton label='收起播放器' onClick={() => setDockOpen(false)}>
+            <IconButton
+              label={playerText('收起播放器')}
+              onClick={() => setDockOpen(false)}
+            >
               <IconChevronDown size={18} stroke={1.8} />
             </IconButton>
           </div>
@@ -917,7 +1039,7 @@ const Player = () => {
               max='100'
               step='0.1'
               value={progress}
-              aria-label='播放进度'
+              aria-label={playerText('播放进度')}
               onChange={seekTo}
             />
             <span>{formatTime(duration)}</span>
@@ -928,8 +1050,8 @@ const Player = () => {
           type='button'
           className={styles.collapsedButton}
           onClick={() => setDockOpen(true)}
-          aria-label='展开音乐播放器'
-          title='展开音乐播放器'
+          aria-label={playerText('展开音乐播放器')}
+          title={playerText('展开音乐播放器')}
         >
           <TrackCover track={currentTrack} playing={isPlaying} />
           {isPlaying && <span className={styles.playingIndicator} />}

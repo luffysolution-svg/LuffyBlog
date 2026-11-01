@@ -24,7 +24,7 @@ const LatestPostsGroup = ({ latestPosts, siteInfo }) => {
       <div className=' mb-2 px-1 flex flex-nowrap justify-between'>
         <div>
           <i className='mr-2 fas fas fa-history' />
-          {locale.COMMON.LATEST_POSTS}
+          {locale.COLLECTIONS?.RECENTLY_UPDATED || locale.COMMON.LAST_EDITED_TIME}
         </div>
       </div>
       {latestPosts.map(post => {

@@ -1,4 +1,5 @@
 import { siteConfig } from '@/lib/config'
+import { getGlobalSnapshot } from '@/lib/global'
 import { useEffect, useState } from 'react'
 
 const ContactQrCards = ({
@@ -6,20 +7,21 @@ const ContactQrCards = ({
   publicImage = siteConfig('CONTACT_WECHAT_PUBLIC_QR_IMAGE'),
   publicName = siteConfig('CONTACT_WECHAT_PUBLIC_NAME')
 }) => {
+  const english = /^en(?:-|$)/i.test(getGlobalSnapshot()?.lang || '')
   const [activeContact, setActiveContact] = useState(null)
   const [failedImages, setFailedImages] = useState({})
   const contacts = [
     personalImage && {
       id: 'personal-wechat',
-      title: '个人微信',
+      title: english ? 'Personal WeChat' : '个人微信',
       image: personalImage,
-      alt: '三木的个人微信二维码'
+      alt: english ? 'Sanmu’s personal WeChat QR code' : '三木的个人微信二维码'
     },
     publicImage && {
       id: 'public-wechat',
-      title: `微信公众号${publicName ? `：${publicName}` : ''}`,
+      title: `${english ? 'WeChat official account' : '微信公众号'}${publicName ? `：${publicName}` : ''}`,
       image: publicImage,
-      alt: `微信公众号${publicName ? `“${publicName}”` : ''}二维码`
+      alt: english ? `WeChat QR code${publicName ? `: ${publicName}` : ''}` : `微信公众号${publicName ? `“${publicName}”` : ''}二维码`
     }
   ].filter(Boolean)
 
@@ -54,12 +56,12 @@ const ContactQrCards = ({
             type='button'
             onClick={() => setActiveContact(contact)}
             className='group w-full rounded-lg border border-gray-200 bg-white p-2 text-left transition hover:border-indigo-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:border-gray-700 dark:bg-hexo-black-gray'
-            aria-label={`放大查看${contact.title}`}
+            aria-label={english ? `Enlarge ${contact.title}` : `放大查看${contact.title}`}
           >
             <div className='mx-auto flex h-28 w-full max-w-48 items-center justify-center overflow-hidden rounded-md bg-gray-50 dark:bg-gray-800'>
               {failedImages[contact.image] ? (
                 <span className='px-3 text-center text-xs text-gray-500'>
-                  二维码暂时无法加载
+                  {english ? 'QR code could not load' : '二维码暂时无法加载'}
                 </span>
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -94,13 +96,13 @@ const ContactQrCards = ({
               type='button'
               onClick={() => setActiveContact(null)}
               className='absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-indigo-400'
-              aria-label='关闭二维码预览'
+              aria-label={english ? 'Close QR code preview' : '关闭二维码预览'}
             >
               ×
             </button>
             {failedImages[activeContact.image] ? (
               <div className='flex h-72 items-center justify-center text-sm text-gray-500'>
-                二维码暂时无法加载，请稍后重试
+                {english ? 'QR code could not load. Please try again.' : '二维码暂时无法加载，请稍后重试'}
               </div>
             ) : (
               // eslint-disable-next-line @next/next/no-img-element

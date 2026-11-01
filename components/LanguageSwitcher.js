@@ -4,14 +4,13 @@ const LANGUAGE_LABELS = {
   en: 'EN',
   'en-US': 'EN',
   zh: '中',
-  'zh-CN': '中',
+  'zh-CN': '中文',
   'zh-HK': '繁',
   'zh-TW': '繁'
 }
 
 /**
- * 多数据库站点的语言入口。
- * 各语言数据库可能没有相同 slug，因此切换后统一进入目标语言首页。
+ * 保留当前文章、专题和查询条件的语言入口。
  */
 export default function LanguageSwitcher() {
   const router = useRouter()
@@ -23,7 +22,7 @@ export default function LanguageSwitcher() {
 
   return (
     <div
-      className='mx-1 flex items-center rounded-full border border-current border-opacity-20 p-0.5 text-xs'
+      className='mx-1 inline-flex shrink-0 items-center whitespace-nowrap rounded-full border border-current border-opacity-20 p-0.5 text-xs'
       role='group'
       aria-label='语言 / Language'
     >
@@ -35,13 +34,16 @@ export default function LanguageSwitcher() {
             type='button'
             aria-pressed={active}
             aria-label={`切换到 ${locale}`}
+            lang={locale}
             disabled={active}
             onClick={() => {
-              void router.push('/', '/', { locale })
+              void router.push(router.asPath || '/', router.asPath || '/', {
+                locale
+              })
             }}
-            className={`h-7 min-w-[1.75rem] rounded-full px-1.5 transition-colors ${
+            className={`inline-flex h-8 w-auto min-w-[2.5rem] shrink-0 items-center justify-center rounded-full px-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
               active
-                ? 'bg-hexo-theme-color text-white'
+                ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
                 : 'hover:bg-black hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-10'
             } disabled:cursor-default`}
           >

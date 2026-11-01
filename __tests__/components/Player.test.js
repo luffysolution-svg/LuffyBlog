@@ -2,6 +2,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { siteConfig } from '@/lib/config'
 import Player from '@/components/Player'
 
+let mockPlayerLanguage = 'zh-CN'
+jest.mock('@/lib/global', () => ({ getGlobalSnapshot: () => ({ lang: mockPlayerLanguage }) }))
+
 jest.mock('@/lib/config', () => ({
   siteConfig: jest.fn()
 }))
@@ -47,6 +50,7 @@ describe('Player', () => {
   let loadMock
 
   beforeEach(() => {
+    mockPlayerLanguage = 'zh-CN'
     siteConfig.mockImplementation(key => config[key])
     playMock = jest.fn().mockResolvedValue(undefined)
     pauseMock = jest.fn()
@@ -74,6 +78,15 @@ describe('Player', () => {
     expect(screen.getByText('示例歌曲')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '搜索点歌' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '播放队列' })).toBeInTheDocument()
+  })
+
+  it('uses English controls on the English site while preserving song titles', () => {
+    mockPlayerLanguage = 'en'
+    render(<Player />)
+    fireEvent.click(screen.getByRole('button', { name: 'Expand music player' }))
+    expect(screen.getByText('示例歌曲')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Find a song' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Play queue' })).toBeInTheDocument()
   })
 
   it('searches songs and adds the selected result to the queue', async () => {

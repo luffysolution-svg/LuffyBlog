@@ -8,6 +8,17 @@ import {
 } from '@/lib/db/notion/getCustomMenu'
 
 describe('getCustomMenu', () => {
+  it('hides disabled collection entries while retaining the other submenu links', () => {
+    const collectionData = [
+      { id: 'browse', type: 'Menu', status: 'Published', slug: '#', href: '#' },
+      { id: 'archive', type: 'SubMenu', status: 'Published', slug: '/archive', href: '/archive' },
+      { id: 'series', type: 'SubMenu', status: 'Published', slug: '/series', href: '/series' },
+      { id: 'projects', type: 'SubMenu', status: 'Published', slug: '/projects', href: '/projects' }
+    ]
+    const menus = getCustomMenu({ collectionData, sourcePageSlugs: new Map(), NOTION_CONFIG: { SERIES_ENABLE: false } })
+    expect(menus[0].subMenus.map(item => item.href)).toEqual(['/archive', '/projects'])
+  })
+
   it('uses the generated page href when a menu targets the page source slug', () => {
     const collectionData = [
       {

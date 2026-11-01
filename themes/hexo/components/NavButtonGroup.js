@@ -21,11 +21,11 @@ const NavButtonGroup = (props) => {
         return (
           <SmartLink
             key={`${category.name}`}
-            title={`${category.name}`}
+            title={category.label || category.name}
             href={`/category/${category.name}`}
             passHref
             className='text-center text-white shadow-text w-full sm:w-4/5 md:mx-6 md:w-40 md:h-14 lg:h-20 h-14 justify-center items-center flex border-2 cursor-pointer rounded-lg glassmorphism hover:bg-white hover:text-black duration-200 hover:scale-105 transform'>
-               {category.name}
+               {category.label || category.name}
             </SmartLink>
         )
       })}

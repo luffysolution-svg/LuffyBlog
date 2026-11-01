@@ -23,6 +23,17 @@ module.exports = {
       process.env.NEXT_PUBLIC_NOTION_PROPERTY_TYPE_MEMBER || 'Member', // 社区成员资料
     type_event:
       process.env.NEXT_PUBLIC_NOTION_PROPERTY_TYPE_EVENT || 'Event', // 社区活动
+    type_series: 'Series',
+    type_project: 'Project',
+    series: '专题',
+    series_order: '篇章顺序',
+    sort_order: '展示顺序',
+    project_url: '项目链接',
+    repository: '源码链接',
+    project_status: '项目状态',
+    title_en: '英文标题',
+    summary_en: '英文摘要',
+    translation_en: '英文正文',
     title: process.env.NEXT_PUBLIC_NOTION_PROPERTY_TITLE || 'title', // 文章标题
     status: process.env.NEXT_PUBLIC_NOTION_PROPERTY_STATUS || 'status',
     status_publish:

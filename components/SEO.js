@@ -352,10 +352,22 @@ const getIsoTime = value => {
  */
 const getSEOMeta = (props, router, locale) => {
   const { post, siteInfo, tag, category, page } = props
+  const categoryLabel = props.categoryOptions?.find(item => item.name === category)?.label || category
+  const tagLabel = props.tagOptions?.find(item => item.name === tag)?.label || tag
   const keyword = router?.query?.s
 
   const TITLE = siteConfig('TITLE')
   switch (router.route) {
+    case '/series':
+    case '/series/[slug]':
+    case '/projects':
+      return {
+        title: `${props.collectionTitle} | ${siteInfo?.title}`,
+        description: props.collectionDescription || siteInfo?.description,
+        image: props.series?.pageCoverThumbnail || siteInfo?.pageCover,
+        slug: props.series ? `series/${props.series.slug}` : router.route.slice(1),
+        type: 'website'
+      }
     case '/':
       return {
         title: `${siteInfo?.title} | ${siteInfo?.description}`,
@@ -382,7 +394,7 @@ const getSEOMeta = (props, router, locale) => {
       }
     case '/category/[category]':
       return {
-        title: `${category} | ${locale.COMMON.CATEGORY} | ${siteInfo?.title}`,
+        title: `${categoryLabel} | ${locale.COMMON.CATEGORY} | ${siteInfo?.title}`,
         description: `${siteInfo?.description}`,
         slug: 'category/' + category,
         image: `${siteInfo?.pageCover}`,
@@ -390,7 +402,7 @@ const getSEOMeta = (props, router, locale) => {
       }
     case '/category/[category]/page/[page]':
       return {
-        title: `${category} | ${locale.COMMON.CATEGORY} | ${siteInfo?.title}`,
+        title: `${categoryLabel} | ${locale.COMMON.CATEGORY} | ${siteInfo?.title}`,
         description: `${siteInfo?.description}`,
         slug: 'category/' + category,
         image: `${siteInfo?.pageCover}`,
@@ -399,7 +411,7 @@ const getSEOMeta = (props, router, locale) => {
     case '/tag/[tag]':
     case '/tag/[tag]/page/[page]':
       return {
-        title: `${tag} | ${locale.COMMON.TAGS} | ${siteInfo?.title}`,
+        title: `${tagLabel} | ${locale.COMMON.TAGS} | ${siteInfo?.title}`,
         description: `${siteInfo?.description}`,
         image: `${siteInfo?.pageCover}`,
         slug: 'tag/' + tag,
