@@ -1,6 +1,7 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
 import { fetchGlobalAllData } from '@/lib/db/SiteDataApi'
+import { filterSearchPosts, searchParam } from '@/lib/search'
 import { DynamicLayout } from '@/themes/theme'
 import { useRouter } from 'next/router'
 
@@ -10,26 +11,18 @@ import { useRouter } from 'next/router'
  * @returns
  */
 const Search = props => {
-  const { posts } = props
+  const { posts = [] } = props
 
   const router = useRouter()
-  const keyword = router?.query?.s
+  const keyword = searchParam(router.query.s)
+  const filtersEnabled = siteConfig('SEARCH_FILTER_ENABLE', true, props.NOTION_CONFIG)
+  const category = filtersEnabled ? searchParam(router.query.category) : ''
+  const tag = filtersEnabled ? searchParam(router.query.tag) : ''
+  const filteredPosts = keyword || category || tag
+    ? filterSearchPosts(posts, { keyword, category, tag })
+    : []
 
-  let filteredPosts
-  // 静态过滤
-  if (keyword) {
-    filteredPosts = posts.filter(post => {
-      const tagContent = post?.tags ? post?.tags.join(' ') : ''
-      const categoryContent = post.category ? post.category.join(' ') : ''
-      const searchContent =
-        post.title + post.summary + tagContent + categoryContent
-      return searchContent.toLowerCase().includes(keyword.toLowerCase())
-    })
-  } else {
-    filteredPosts = []
-  }
-
-  props = { ...props, posts: filteredPosts }
+  props = { ...props, posts: filteredPosts, keyword, postCount: filteredPosts.length }
 
   const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
   return <DynamicLayout theme={theme} layoutName='LayoutSearch' {...props} />

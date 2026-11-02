@@ -2,6 +2,7 @@ import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
 import throttle from 'lodash.throttle'
 import SmartLink from '@/components/SmartLink'
+import Link from 'next/link'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -166,6 +167,11 @@ const Header = props => {
               <MenuListTop {...props} />
             </div>
             <LanguageSwitcher />
+            {siteConfig('BOOKMARK_ENABLE', true) && (
+              <Link href='/bookmarks' aria-label={locale.READER.BOOKMARKS} title={locale.READER.BOOKMARKS} className='inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-black hover:bg-opacity-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>
+                <i aria-hidden='true' className='far fa-bookmark' />
+              </Link>
+            )}
             <button
               type='button'
               aria-label={locale.COMMON.MORE}

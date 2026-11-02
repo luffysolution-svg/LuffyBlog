@@ -1,105 +1,96 @@
-import { useRouter } from 'next/router'
-import { useImperativeHandle, useRef, useState } from 'react'
+import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
-let lock = false
+import { searchParam } from '@/lib/search'
+import { useRouter } from 'next/router'
+import { useEffect, useImperativeHandle, useRef, useState } from 'react'
 
-const SearchInput = props => {
-  const { currentSearch, cRef, className } = props
-  const [onLoading, setLoadingState] = useState(false)
+const SearchInput = ({
+  currentSearch = '',
+  cRef,
+  className = '',
+  autoFocus = false
+}) => {
   const router = useRouter()
-  const searchInputRef = useRef()
-  const { locale } = useGlobal()
-  useImperativeHandle(cRef, () => {
-    return {
-      focus: () => {
-        searchInputRef?.current?.focus()
+  const { locale, lang } = useGlobal()
+  const inputRef = useRef(null)
+  const [value, setValue] = useState(currentSearch)
+  const [loading, setLoading] = useState(false)
+  const english = /^en(?:-|$)/i.test(lang)
+  const placeholder = siteConfig(
+    english ? 'SEARCH_PLACEHOLDER_EN' : 'SEARCH_PLACEHOLDER',
+    locale.SEARCH.ARTICLES
+  )
+
+  useImperativeHandle(cRef, () => ({ focus: () => inputRef.current?.focus() }))
+  useEffect(() => setValue(currentSearch), [currentSearch])
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus()
+  }, [autoFocus])
+
+  const submit = async event => {
+    event.preventDefault()
+    const query = {}
+    const keyword = value.trim()
+    if (keyword) query.s = keyword
+    if (siteConfig('SEARCH_FILTER_ENABLE', true)) {
+      const filters = new URLSearchParams(window.location.search)
+      for (const key of ['category', 'tag']) {
+        const filter = searchParam(filters.get(key))
+        if (filter) query[key] = filter
       }
     }
-  })
-
-  const handleSearch = () => {
-    const key = searchInputRef.current.value
-    if (key && key !== '') {
-      setLoadingState(true)
-      router.push({ pathname: '/search/' + key }).then(r => {
-        setLoadingState(false)
+    setLoading(true)
+    try {
+      await router.push({ pathname: '/search', query }, undefined, {
+        shallow: router.pathname === '/search'
       })
-      // location.href = '/search/' + key
-    } else {
-      router.push({ pathname: '/' }).then(r => {})
+    } finally {
+      setLoading(false)
     }
-  }
-  const handleKeyUp = e => {
-    if (e.keyCode === 13) {
-      // 回车
-      handleSearch(searchInputRef.current.value)
-    } else if (e.keyCode === 27) {
-      // ESC
-      cleanSearch()
-    }
-  }
-  const cleanSearch = () => {
-    searchInputRef.current.value = ''
-  }
-
-  const [showClean, setShowClean] = useState(false)
-  const updateSearchKey = val => {
-    if (lock) {
-      return
-    }
-    searchInputRef.current.value = val
-
-    if (val) {
-      setShowClean(true)
-    } else {
-      setShowClean(false)
-    }
-  }
-  function lockSearchInput () {
-    lock = true
-  }
-
-  function unLockSearchInput () {
-    lock = false
   }
 
   return (
-    <div className={'flex w-full rounded-lg ' + className}>
-      <input
-        ref={searchInputRef}
-        type="text"
-        className={
-          'outline-none w-full text-sm pl-5 rounded-lg transition focus:shadow-lg dark:text-gray-300 font-light leading-10 text-black bg-gray-100 dark:bg-gray-500'
-        }
-        onKeyUp={handleKeyUp}
-        onCompositionStart={lockSearchInput}
-        onCompositionUpdate={lockSearchInput}
-        onCompositionEnd={unLockSearchInput}
-        placeholder={locale.SEARCH.ARTICLES}
-        onChange={e => updateSearchKey(e.target.value)}
-        defaultValue={currentSearch || ''}
-      />
-
-      <div
-        className="-ml-8 cursor-pointer  float-right items-center justify-center py-2"
-        onClick={handleSearch}
+    <form
+      role='search'
+      onSubmit={event => {
+        void submit(event)
+      }}
+      className={`flex min-w-0 gap-2 ${className}`}
+    >
+      <label
+        className='sr-only'
+        htmlFor={autoFocus ? 'site-search' : 'drawer-search'}
       >
-        <i
-          className={`hover:text-black transform duration-200 text-gray-500 dark:text-gray-200 cursor-pointer fas ${
-            onLoading ? 'fa-spinner animate-spin' : 'fa-search'
-          }`}
-        />
-      </div>
-
-      {showClean && (
-        <div className="-ml-12 cursor-pointer float-right items-center justify-center py-2">
-          <i
-            className="hover:text-black transform duration-200 text-gray-400 dark:text-gray-300 cursor-pointer fas fa-times"
-            onClick={cleanSearch}
-          />
-        </div>
-      )}
-    </div>
+        {locale.SEARCH.ARTICLES}
+      </label>
+      <input
+        id={autoFocus ? 'site-search' : 'drawer-search'}
+        ref={inputRef}
+        type='search'
+        name='s'
+        value={value}
+        placeholder={placeholder}
+        onChange={event => setValue(event.target.value)}
+        onKeyDown={event => {
+          if (event.nativeEvent.isComposing || event.keyCode === 229) {
+            if (event.key === 'Enter') event.preventDefault()
+            return
+          }
+          if (event.key === 'Escape') {
+            setValue('')
+            event.stopPropagation()
+          }
+        }}
+        className='min-h-11 min-w-0 flex-1 rounded-lg border border-gray-300 bg-gray-50 px-4 text-base text-gray-900 placeholder:text-gray-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-300'
+      />
+      <button
+        type='submit'
+        disabled={loading}
+        className='min-h-11 shrink-0 rounded-lg bg-indigo-700 px-5 text-sm font-medium text-white hover:bg-indigo-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50'
+      >
+        {loading ? locale.COMMON.LOADING : locale.NAV.SEARCH}
+      </button>
+    </form>
   )
 }
 

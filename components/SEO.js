@@ -384,6 +384,14 @@ const getSEOMeta = (props, router, locale) => {
         slug: 'archive',
         type: 'website'
       }
+    case '/bookmarks':
+      return {
+        title: `${locale.READER.BOOKMARKS} | ${siteInfo?.title}`,
+        description: locale.READER.LOCAL_ONLY,
+        image: siteInfo?.pageCover,
+        slug: 'bookmarks',
+        type: 'website'
+      }
     case '/page/[page]':
       return {
         title: `${page} | Page | ${siteInfo?.title}`,

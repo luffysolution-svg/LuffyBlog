@@ -77,4 +77,9 @@ describe('Notion configuration precedence', () => {
     getGlobalSnapshot.mockReturnValue({ NOTION_CONFIG: { POST_RECOMMEND_COUNT: 99 } })
     expect(siteConfig('POST_RECOMMEND_COUNT', 6, { POST_RECOMMEND_COUNT: 2 })).toBe(2)
   })
+
+  it('lets Notion disable the bookmark controls in the browser', () => {
+    getGlobalSnapshot.mockReturnValue({ NOTION_CONFIG: { BOOKMARK_ENABLE: false } })
+    expect(siteConfig('BOOKMARK_ENABLE', true)).toBe(false)
+  })
 })

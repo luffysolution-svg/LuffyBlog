@@ -1,6 +1,7 @@
 import Comment from '@/components/Comment'
 import ContentCollections from '@/components/ContentCollections'
-import replaceSearchResult from '@/components/Mark'
+import ArticleReader from '@/components/ArticleReader'
+import BookmarkList from '@/components/BookmarkList'
 import NotionPage from '@/components/NotionPage'
 import ShareBar from '@/components/ShareBar'
 import { siteConfig } from '@/lib/config'
@@ -191,6 +192,8 @@ const LayoutCollections = props => (
   <ContentCollections {...props} kind={props.collectionKind} title={props.collectionTitle} description={props.collectionDescription} />
 )
 
+const LayoutBookmarks = props => <BookmarkList posts={props.posts} />
+
 /**
  * 博客列表
  * @param {*} props
@@ -215,37 +218,9 @@ const LayoutPostList = props => {
  * @returns
  */
 const LayoutSearch = props => {
-  const { keyword } = props
-  const router = useRouter()
-  const currentSearch = keyword || router?.query?.s
-
-  useEffect(() => {
-    if (currentSearch) {
-      replaceSearchResult({
-        doms: document.getElementsByClassName('replace'),
-        search: keyword,
-        target: {
-          element: 'span',
-          className: 'text-red-500 border-b border-dashed'
-        }
-      })
-    }
-  })
-
   return (
     <div className='pt-8'>
-      {!currentSearch ? (
-        <SearchNav {...props} />
-      ) : (
-        <div id='posts-wrapper'>
-          {' '}
-          {siteConfig('POST_LIST_STYLE', 'page', props.NOTION_CONFIG) === 'page' ? (
-            <BlogPostListPage {...props} />
-          ) : (
-            <BlogPostListScroll {...props} />
-          )}{' '}
-        </div>
-      )}
+      <SearchNav {...props} />
     </div>
   )
 }
@@ -313,6 +288,7 @@ const LayoutSlug = props => {
               className='subpixel-antialiased overflow-y-hidden'>
               {/* Notion文章主体 */}
               <section className='px-5 justify-center mx-auto max-w-2xl lg:max-w-full'>
+                {post.type === 'Post' && <ArticleReader key={post.id} post={post} />}
                 {post && <NotionPage post={post} />}
               </section>
 
@@ -446,6 +422,7 @@ export {
   Layout404,
   LayoutArchive,
   LayoutBase,
+  LayoutBookmarks,
   LayoutCategoryIndex,
   LayoutCollections,
   LayoutIndex,
